@@ -1,0 +1,1819 @@
+/* Estilos Gerais (assumindo algumas variáveis do seu design) */
+:root {
+    /* Nova paleta de cores: Rosa e Roxo */
+    --primary: #8E2DE2; /* Roxo principal */
+    --secondary: #F953C6; /* Rosa vibrante */
+    --primary-darker: #4C2A88; /* Roxo mais escuro para títulos */
+    --gradient-start: #FF512F; /* Laranja/vermelho para gradiente mais quente */
+    --background: #FFF7FE; /* Fundo rosa bem claro */
+    --surface: #ffffff;
+    --text-dark: #4A235A; /* Roxo escuro para texto */
+    --text-light: #A569BD; /* Roxo claro para detalhes */
+    --border-color: #F2EBF9; /* Borda lavanda super clara */
+    --shadow: 0 4px 10px rgba(150, 80, 255, 0.06); /* Sombra nova, mais suave */
+    --shadow-hover: 0 6px 20px rgba(150, 80, 255, 0.12);
+}
+
+body {
+    /* Adicionando um fundo sutil para não ser branco puro */
+    background-color: #fdfaff;
+    /* Fundo com padrão de pontos ainda mais sutil e menor */
+    background-image: url("data:image/svg+xml,%3Csvg width='15' height='15' viewBox='0 0 15 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F2EBF9' fill-opacity='0.4'%3E%3Ccircle cx='7.5' cy='7.5' r='1'/%3E%3C/g%3E%3C/svg%3E");
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-dark); 
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+ 
+/* --- TIPOGRAFIA --- */
+/* Define a fonte serifada para todos os títulos e elementos de destaque */
+h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
+    color: var(--primary-darker);
+    font-family: 'Playfair Display', serif;
+}
+ 
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+/* Animação de flutuação mais suave para a logo */
+@keyframes hero-float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+    100% { transform: translateY(0px); }
+}
+/* --- HERO PAGE --- */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero--fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.hero__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    animation: gradient-animation 10s ease infinite;
+    background-size: 200% 200%;
+    z-index: -1;
+}
+
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.hero__blob {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    filter: blur(40px);
+    animation: float 15s infinite ease-in-out;
+}
+.hero__blob--1 {
+    width: 400px;
+    height: 400px;
+    top: -150px;
+    left: -150px;
+}
+.hero__blob--2 {
+    width: 300px;
+    height: 300px;
+    bottom: -100px;
+    right: -100px;
+    animation-delay: -5s;
+}
+.hero__blob--3 {
+    width: 250px;
+    height: 250px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -10s;
+    animation-duration: 20s;
+}
+.hero__blob--4 {
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    right: 15%;
+    animation-delay: -2s;
+    animation-duration: 18s;
+}
+.hero__blob--5 {
+    width: 150px;
+    height: 150px;
+    bottom: 20%;
+    left: 10%;
+    animation-delay: -7s;
+    animation-duration: 22s;
+}
+
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.hero__content {
+    max-width: 700px;
+    padding: 20px;
+}
+
+.hero__title {
+    font-size: clamp(3rem, 10vw, 5rem); /* Tamanho de fonte responsivo */
+    font-weight: 700;
+    /* Sombra sutil para destacar o título completo */
+    text-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    margin-bottom: 10px;
+}
+
+.hero__title--accent {
+    color: var(--secondary);
+}
+
+.hero__subtitle {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    margin: 0 auto 40px;
+    /* Limita a largura de leitura para melhor equilíbrio */
+    max-width: 480px;
+}
+
+.hero__illustration {
+    margin: 30px auto 40px; /* Aumenta a margem para a raposa "respirar" */
+    width: 230px; /* Diminui levemente o tamanho da ilustração */
+    position: relative; /* Necessário para o efeito de bloom */
+    /* A animação de entrada 'slide-in' é combinada com a nova animação 'hero-float' */
+    animation: slide-in 0.8s 0.2s ease-out forwards, hero-float 7s infinite ease-in-out 1s;
+    opacity: 0; /* Necessário para a animação de entrada */
+    transition: transform 0.4s ease; /* Transição suave para o efeito de hover */
+}
+
+.hero__illustration:hover {
+    transform: scale(1.05) rotateZ(-3deg); /* Efeito de inclinação e zoom no hover */
+}
+
+.hero__logo {
+    max-width: 100%; /* Garante que a logo se ajuste ao contêiner */
+    height: auto;    /* Mantém a proporção da imagem */
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); /* Sombra mais pronunciada */
+    transition: filter 0.4s ease; /* Transição suave para a sombra */
+}
+
+/* Efeito de "bloom" circular atrás da mascote */
+.hero__bloom {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 65%);
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    border-radius: 50%;
+}
+
+/* Animações de entrada */
+/* As animações de entrada agora são aplicadas diretamente nos seletores */
+.hero__title { animation: slide-in 0.8s ease-out forwards; }
+.hero__subtitle { animation: slide-in 0.8s 0.4s ease-out forwards; opacity: 0; }
+.btn--large { animation: slide-in 0.8s 0.6s ease-out forwards; opacity: 0; }
+
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn--large {
+    padding: 18px 35px; /* Altura maior */
+    font-size: 1.2rem;
+    border-radius: 14px; /* Cantos mais arredondados */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* Sombra mais "clicável" */
+    animation: slide-in 0.8s 0.6s ease-out forwards, pulse-btn 2s infinite 1s;
+}
+
+@keyframes pulse-btn {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Layout Principal */
+/* Garante que o container principal use flexbox na direção de coluna */
+#main-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Ocupa a altura total da tela */
+}
+
+/* Permite que o conteúdo principal cresça e ocupe o espaço restante */
+.main-content {
+    flex-grow: 1;
+    overflow-y: auto; /* Adiciona rolagem se o conteúdo for maior que a tela */
+}
+
+.app-header {
+    flex-shrink: 0; /* Impede que o cabeçalho encolha */
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px; /* Reduz a altura do botão e, consequentemente, do header */
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    font-weight: 400; /* Fonte mais suave para os itens inativos */
+    color: rgba(255, 255, 255, 0.8);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease; 
+}
+
+.nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.nav-btn--active {
+    background-color: var(--secondary);
+    color: white; /* Contraste mais forte para o texto ativo */
+    font-weight: 500; /* Destaque sutil para o item ativo */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.nav-btn--active .nav-btn__icon {
+    /* Efeito de brilho no ícone ativo */
+    filter: drop-shadow(0 0 3px var(--secondary));
+}
+
+.nav-btn:hover .nav-btn__icon {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.nav-btn__icon {
+    transition: transform 0.2s ease;
+}
+
+.nav-btn__icon {
+    /* Estilo para os novos ícones SVG */
+    margin-right: 15px;
+    width: 20px;
+    height: 20px;
+}
+
+/* --- CAIXA DE CONHECIMENTO / DICA --- */
+.knowledge-box {
+    background-color: #FBF5FF; /* Um tom de lavanda muito claro, um pouco diferente do fundo principal */
+    border-left: 4px solid var(--primary);
+    padding: 20px;
+    margin: 25px 0; /* Adiciona espaço vertical */
+    border-radius: 0 8px 8px 0; /* Arredonda os cantos, exceto o da borda */
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: flex-start; /* Alinha o ícone com o topo do texto */
+    gap: 15px;
+}
+
+.knowledge-box .icon {
+    flex-shrink: 0;
+    font-size: 1.5rem; /* Tamanho do ícone (ex: usando Font Awesome 'fa-lightbulb') */
+    color: var(--primary);
+    margin-top: 3px; /* Ajuste fino vertical */
+}
+
+.knowledge-box-content h4 {
+    margin: 0 0 8px 0;
+    font-family: 'Playfair Display', serif;
+    color: var(--primary-darker);
+    font-size: 1.2rem;
+}
+
+.knowledge-box-content p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.knowledge-box-content a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.knowledge-box-content a:hover {
+    text-decoration: underline;
+}
+
+/* Garante que o botão de submit dentro do modal de auth tenha o estilo correto */
+#authModal .btn--full {
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
+    border-radius: 12px;
+    margin-top: 10px;
+    /* Reseta estilos que possam ter sido herdados */
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.settings h3 {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.form-group input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.main-content {
+    /* Diminui o padding superior para aproximar o título do topo */
+    padding: 15px 50px 25px; /* Reduzido o padding superior */
+    overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+}
+
+.app-header {
+    /* Novo gradiente artístico e animado */
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--gradient-start) 100%);
+    color: white;
+    padding: 0 40px;
+    background-size: 250% 250%;
+    /* Adiciona uma transição suave para a sombra */
+    transition: box-shadow 0.3s ease;
+    z-index: 100; /* Garante que o header fique acima do conteúdo */
+    animation: gradient-animation 15s ease infinite;
+}
+
+.app-header__content { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Classe que será adicionada via JS quando a página for rolada */
+.app-header.header-scrolled {
+    box-shadow: var(--shadow-hover);
+}
+
+.app-header__title--accent {
+    color: var(--secondary);
+}
+
+.app-header__nav {
+    display: flex;
+    gap: 10px;
+}
+
+.app-header__nav .nav-btn {
+    margin-bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.app-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.app-header__actions .form-group input {
+    width: 90px; /* Reduz a largura do campo de salário */
+    text-align: center;
+}
+
+/* Garante que o label e o input no cabeçalho fiquem organizados */
+.app-header__actions .form-group {
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+/* Link para abrir a calculadora de salário */
+.salary-calculator-link {
+    display: block;
+    font-size: 0.75rem;
+    color: white;
+    opacity: 0.8;
+    text-decoration: underline;
+    margin-top: 5px;
+}
+
+/* Corrige a cor do texto do input de salário no cabeçalho */
+.app-header__actions .form-group input {
+    background-color: var(--surface); /* Fundo branco sólido */
+    color: var(--text-dark); /* Texto roxo escuro */
+    border-color: var(--border-color);
+}
+
+/* Estilo específico para o botão de Login no cabeçalho */
+.btn--outline {    
+    background-color: transparent;
+    color: white;
+    font-weight: 600;
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Borda branca semitransparente */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px; /* Ajusta o padding para acomodar o ícone */
+}
+
+.btn--outline:hover {
+    background-color: var(--surface); /* Fica branco ao passar o mouse */
+    color: var(--primary); /* O texto e o ícone ficam roxos */
+    border-color: var(--surface);
+}
+
+/* Container para informações do usuário logado */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--surface);
+    padding: 5px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.user-info__name {
+    font-weight: 600;
+    color: var(--primary-darker);
+}
+
+.user-info__logout {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    padding: 5px;
+}
+
+.user-info__logout:hover {
+    text-decoration: underline;
+    color: var(--primary-darker);
+}
+
+.page-header,
+.wizard-steps,
+.calculator-grid {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page-header h2 {
+    font-size: 2.5rem;
+    margin-top: 0; /* Remove a margem superior padrão */
+    margin-bottom: 5px;
+    color: var(--primary-darker);
+}
+
+.page-header p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+
+/* --- WIZARD DE PASSOS --- */
+.wizard-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    position: relative;
+    padding: 0 15%; /* Adiciona espaço nas laterais para não ficar colado */
+}
+
+.wizard-steps__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    color: var(--text-light);
+    opacity: 0.5; /* Reduz a opacidade dos passos futuros/inativos */
+    transition: opacity 0.3s ease;
+}
+
+.wizard-steps__counter {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--surface);
+    border: 2px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.wizard-steps__title {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;    transition: color 0.3s ease;
+}
+
+.wizard-steps__line {
+    flex-grow: 1;
+    height: 2px;
+    background-color: var(--border-color);
+    margin-top: 20px; /* Alinha com o centro dos círculos */
+    transition: background-color 0.3s ease;
+}
+
+/* Estilo do passo ATIVO */
+.wizard-steps__item--active .wizard-steps__counter {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);    box-shadow: 0 0 15px rgba(142, 45, 226, 0.5); /* Glow mais forte */
+}
+
+.wizard-steps__item--active,
+.wizard-steps__item--completed {
+    opacity: 1; /* Garante que os passos ativos e concluídos fiquem 100% visíveis */
+}
+
+.wizard-steps__item--active .wizard-steps__title {
+    color: var(--primary-darker);
+    font-weight: 600;
+}
+
+/* Estilo do passo CONCLUÍDO */
+.wizard-steps__item--completed .wizard-steps__counter {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.wizard-steps__item--completed + .wizard-steps__line {
+    background-color: var(--primary);
+}
+
+/* Estilos para os novos elementos */
+
+/* 1. Dica no Card de Materiais */
+.card__hint {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* 2. Grupo de formulário em linha para o tempo manual */
+.form-group--inline {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espaço entre os elementos */
+    flex-wrap: wrap; /* Permite que os itens quebrem a linha em telas menores */
+    margin-top: 15px;
+}
+
+.form-group--inline .form-group__label {
+    margin: 0;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.labor-cost {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.input-group--inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group--inline label {
+    margin-bottom: 0; /* Remove a margem inferior padrão do label */
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* 3. Inputs pequenos para horas e minutos */
+.form-group__input--small {
+    width: 80px; /* Uma largura fixa para os inputs de tempo */
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-group__input--small:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.2);
+}
+
+/* 4. Botão pequeno para adicionar tempo/fio */
+.btn--small {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+/* 5. Ajustes gerais para garantir consistência */
+
+/* Garante que todos os cards tenham o mesmo espaçamento inferior */
+.card {
+    /* Efeito Glassmorphism */
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px); /* Blur um pouco mais sutil */
+    border-radius: 16px; /* Bordas mais arredondadas */
+    border: 1.5px solid #E5D0FF; /* Borda sutil colorida */
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease; /* Transição suave para hover */
+    padding: 25px;
+}
+.card__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0;
+    color: var(--primary-darker);
+}
+
+.card__title i {
+    width: 20px;
+    height: 20px;
+}
+.card:hover {
+    transform: translateY(-5px); /* Efeito de "flutuar" */
+    box-shadow: var(--shadow-hover);
+}
+
+/* Garante que o último elemento de um card não tenha margem inferior extra */
+.card > *:last-child {
+    margin-bottom: 0;
+}
+
+/* --- FORMULÁRIO MULTI-STEP --- */
+#calculator-form-steps {
+    max-width: 700px; /* Centraliza o conteúdo de cada passo */
+    margin: 0 auto;
+}
+
+.form-step {
+    display: none; /* Permanece escondido por padrão */
+}
+.form-step.active-step {
+    display: block; /* Apenas o passo ativo é exibido */
+}
+
+/* Novas animações de slide e fade */
+.form-step.slide-in-right {
+    animation: slideInFromRight 0.5s ease-out forwards;
+}
+.form-step.slide-out-left {
+    animation: slideOutToLeft 0.5s ease-in forwards;
+}
+.form-step.slide-in-left {
+    animation: slideInFromLeft 0.5s ease-out forwards;
+}
+.form-step.slide-out-right {
+    animation: slideOutToRight 0.5s ease-in forwards;
+}
+
+@keyframes slideInFromRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideOutToLeft {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(-30px); }
+}
+@keyframes slideInFromLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideOutToRight {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(30px); }
+}
+
+/* --- MELHORIAS NOS INPUTS --- */
+
+/* Wrapper para posicionar o ícone dentro do input */
+.form-group__wrapper {
+    position: relative;
+}
+
+.form-group__wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    width: 16px; /* Ajuste fino no ícone */
+    height: 18px;
+    pointer-events: none; /* Permite clicar através do ícone */
+}
+
+/* Adiciona padding à esquerda nos inputs para não sobrepor o ícone */
+.form-group__wrapper input {
+    padding-left: 45px;
+}
+
+/* Limita a largura dos inputs para não ficarem esticados */
+.form-group input[type="text"], .form-group input[type="number"] {
+    /* A largura máxima agora é controlada pelo contêiner do formulário */
+    width: 100%;
+}
+
+/* Garante que os inputs de número tenham a mesma aparência */
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="text"],
+select,
+textarea {
+    font-family: 'Poppins', sans-serif; /* Garante a fonte correta */
+    padding: 15px; /* Aumenta a altura para aprox. 48-50px */
+    border: 1px solid var(--border-color);
+    border-radius: 14px; /* Bordas mais arredondadas */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fff;
+    color: var(--text-dark); /* Garante que o texto digitado seja visível */
+}
+
+select {
+    /* Adiciona o ícone de seta padrão, mas permite customização */
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23A569BD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px; /* Espaço para a seta */
+}
+
+/* Placeholder com tom lilás */
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-light);
+    opacity: 0.8;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(142, 45, 226, 0.15);
+}
+
+/* Melhorias nos Botões */
+.btn {
+    padding: 12px 25px;
+    border-radius: 12px; /* Bordas mais arredondadas */
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btn--primary {
+    background-image: linear-gradient(to right, var(--primary) 0%, var(--secondary) 50%, var(--primary) 100%);
+    background-size: 200% auto;
+    color: white;
+}
+
+.btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-position: right center; /* Move o gradiente no hover */
+}
+
+.btn:active {
+    transform: translateY(1px); /* "Pressiona" o botão para baixo */
+    filter: brightness(0.95); /* Escurece levemente */
+    box-shadow: var(--shadow); /* Reduz a sombra para o estado normal */
+    transition: transform 0.1s ease, filter 0.1s ease; /* Transição rápida para o clique */
+}
+
+/* Animação da seta do dropdown */
+select:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238E2DE2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.btn--secondary {
+    background-color: var(--border-color);
+    color: var(--primary);
+}
+
+.btn--secondary:hover {
+    background-color: #e5d5f2;
+}
+
+/* Botão de "Salvar Peça" dentro do resumo */
+.btn--full {
+    width: 100%;
+    border-radius: 0; /* Remove o arredondamento para se integrar ao card */
+    padding: 18px 15px; /* 18px vertical, 15px horizontal */
+    font-size: 1rem;
+    border-bottom-left-radius: 16px; /* Mantém o arredondamento nos cantos inferiores do card */
+    border-bottom-right-radius: 16px;
+    /* Estilo de botão secundário premium */
+    background: var(--surface); /* Fundo branco */
+    color: var(--primary-darker);
+    border: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color); /* Garante a separação visual */
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5); /* Leve brilho interno */
+}
+
+/* Estilos para os botões de ação no histórico */
+.history-item-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Estilos para a barra de busca no histórico */
+.history-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.history-controls .search-bar-container {
+    flex-grow: 1; /* Faz a barra de busca ocupar o espaço disponível */
+    margin-bottom: 0;
+}
+
+#historySearchInput {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Lora', serif;
+    background-color: var(--surface);
+    box-sizing: border-box; /* Garante que o padding não afete a largura total */
+}
+
+#historySortSelect {
+    min-width: 180px; /* Largura mínima para o seletor */
+    /* Herda os estilos de 'select' que já definimos */
+}
+
+
+#historySearchInput:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(142, 45, 226, 0.15);
+}
+
+/* --- ESTILOS ADICIONAIS PARA CONECTAR TUDO --- */
+
+/* Layout das Abas */
+.tab-pane { 
+    /* Esconde as abas fora da tela para permitir animação */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none; /* Impede interação com abas inativas */
+    padding: inherit; /* Herda o padding do .main-content */
+    box-sizing: border-box;
+}
+.tab-pane--active {
+    /* Torna a aba ativa visível e interativa */
+    opacity: 1;
+    pointer-events: auto;
+    position: relative; /* Garante que o conteúdo flua normalmente */
+    animation: slideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Animação para a aba que está saindo */
+.tab-pane.is-exiting {
+    animation: slideOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); } 
+}
+@keyframes slideOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(50px); }
+}
+/* Estilo para a lista de fios */
+.tab-pane {
+    /* Adicionado para conter as abas posicionadas absolutamente e controlar a animação */
+    position: relative;
+    overflow-x: hidden; /* Previne a barra de rolagem horizontal durante a animação */
+}
+
+.yarn-item,
+.material-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #fafafa;
+}
+.yarn-info .yarn-name,
+.material-info .material-name {
+    font-weight: 600;
+}
+.yarn-info .yarn-details,
+.material-info .material-details {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+.yarn-cost,
+.material-cost {
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+}
+.yarn-delete,
+.material-delete {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 15px;
+}
+
+/* Estilo para o resultado no modal de cálculo de salário */
+.salary-helper__result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--background);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.1rem;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+}
+
+/* Estilos para os Modais */
+.modal {
+    display: none; /* Escondido por padrão */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+.modal.active {
+    display: flex; /* Usa flex para centralizar */
+}
+.modal__content {
+    background-color: var(--surface);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-hover);
+    animation: modal-fade-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal__header, .modal__body, .modal__footer {
+    padding: 20px 25px;
+}
+
+.modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal__close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--text-light);
+    cursor: pointer; 
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.modal__close:hover {
+    color: var(--primary);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Calculadora de Preço por Grama no Modal */
+.price-helper {
+    background-color: var(--background);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.price-helper__title {
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.helper-inputs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.helper-result {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary-darker);
+}
+
+.helper-result span {
+    font-family: 'IBM Plex Mono', monospace;
+    background-color: #f0e6ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Garante que os inputs dentro do helper não tenham margem inferior extra */
+.helper-inputs .form-group {
+    margin-bottom: 0;
+}
+
+/* Remove a seta de dropdown dos inputs de número */
+input[type="number"] {
+    background-image: none;
+    padding-right: 15px;
+}
+
+/* Remove as setas de incremento/decremento no Chrome, Safari, Edge */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Remove as setas de incremento/decremento no Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: none; /* Adicionado para compatibilidade e para resolver o aviso */
+}
+
+.helper-inputs .form-group {
+    flex: 1;
+}
+
+/* --- PAINEL DE RESUMO ESPETACULAR --- */
+.card--summary {
+    /* Fundo com textura de papel artesanal digital */
+    background-color: var(--background);
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23F2EBF9' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+    backdrop-filter: none;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 15px 35px rgba(142, 45, 226, 0.1), 0 5px 15px rgba(0,0,0,0.05);
+    padding: 0; /* Remove padding para dar controle total aos filhos */
+    overflow: hidden; /* Garante que os cantos arredondados sejam respeitados */
+    position: sticky; /* Faz o painel acompanhar o scroll */
+    top: 50px;
+}
+
+.card--summary .card__title {
+    text-align: center;
+    font-size: 1.8rem;
+    color: var(--primary-darker);
+    padding: 20px 30px 15px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 30px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1rem;
+}
+
+.summary-item__label {
+    color: var(--text-dark);
+    font-weight: 400; /* Título fino */
+    opacity: 0.7;
+}
+
+.summary-item__value {
+    font-weight: 700; /* Número pesado */
+    color: var(--primary-darker);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.2rem; /* Aumenta o tamanho para 19.2px */
+}
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 10px 30px;
+}
+
+/* Bloco de configurações de preço */
+.price-settings-block {
+    background-color: var(--background);
+    padding: 0; /* Remove padding para controle interno */
+    margin: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.settings-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin: 0;
+    padding: 15px 20px;
+}
+
+.settings-inputs {
+    padding: 20px;
+    border-top: 1px solid var(--border-color); /* Divisor suave */
+}
+
+.settings-inputs .form-group:last-child {
+    margin-bottom: 15px;
+    margin-bottom: 0;
+}
+
+/* Animação de Flash para atualizações */
+.flash-update {
+    animation: flash-animation 0.5s ease-out;
+}
+
+@keyframes flash-animation {
+    0% { background-color: transparent; }
+    50% { background-color: #fdeaff; transform: scale(1.05); }
+    100% { background-color: transparent; transform: scale(1); }
+}
+
+/* Estilos para o Resumo Final */
+.summary-final {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 25px 30px;
+    box-shadow: inset 0 8px 15px -5px rgba(0,0,0,0.25); /* Sombra interna superior para profundidade */
+    text-align: center;
+}
+
+.summary-final__label {
+    margin: 0 0 5px;
+    font-weight: 500;
+    opacity: 0.8;
+    font-size: 1rem;
+}
+
+.summary-final__value {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 3.5rem; /* Fonte épica */
+    line-height: 1.1;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2); /* Sombra sutil no texto para contraste */
+}
+
+.summary-final__currency {
+    font-family: 'Poppins', sans-serif; /* Usa a fonte do corpo, mais neutra */
+    font-size: 1.5rem; /* Tamanho reduzido */
+    font-weight: 400; /* Peso mais leve */
+    opacity: 0.8;
+    margin-right: 5px;
+    vertical-align: 0.3em; /* Alinhamento vertical ajustado */
+}
+
+/* --- CRONÔMETRO CIRCULAR --- */
+.circular-timer {
+    position: relative;
+    width: 200px; /* Aumenta o tamanho do timer */
+    height: 200px;
+    margin: 20px auto;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.04); /* Sombra interna para profundidade */
+    border-radius: 50%;
+}
+
+/* Animação de pulso para o timer ativo */
+@keyframes pulse-timer {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.03);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+.circular-timer.timer-running {
+    animation: pulse-timer 2s infinite ease-in-out;
+}
+
+.circular-timer__svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+    /* Adiciona um brilho sutil ao fundo do timer */
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+}
+
+.circular-timer__background {
+    fill: none;
+    stroke: var(--border-color);
+    stroke-width: 10; /* Borda mais espessa */
+}
+
+.circular-timer__progress {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 10; /* Borda mais espessa */
+    stroke-linecap: round;
+    /* Novo cálculo para o raio de 95 ( (200/2) - (10/2) ) -> 2 * PI * 95 = 597 */
+    stroke-dasharray: 597;
+    stroke-dashoffset: 597;
+    transition: stroke-dashoffset 1s linear;
+    filter: drop-shadow(0 0 5px rgba(142, 45, 226, 0.5)); /* Efeito de "glow" */
+}
+
+.circular-timer__text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 2.5rem; /* Aumenta o texto para acompanhar o timer */
+    font-weight: 600;
+    color: var(--primary-darker);
+}
+
+/* --- BOTÕES DO CRONÔMETRO --- */
+.circular-timer__controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.circular-timer__controls .btn {
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.circular-timer__controls .btn--start {
+    background-image: linear-gradient(45deg, #4CAF50 0%, #81C784 100%);
+    color: white;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+}
+
+.circular-timer__controls .btn--pause,
+.circular-timer__controls .btn--stop {
+    background-color: var(--surface);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    padding: 12px 20px;
+    font-size: 1rem;
+}
+
+.circular-timer__controls .btn--pause:hover,
+.circular-timer__controls .btn--stop:hover {
+    background-color: var(--border-color);
+    border-color: #dcd0e8;
+}
+
+/* Ações abaixo do timer, como "Salvar Sessão" */
+.circular-timer__actions {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.btn--save-session {
+    background-color: transparent;
+    color: var(--primary);
+    border: 1px solid var(--border-color);
+    font-weight: 500;
+}
+
+.btn--save-session:hover {
+    background-color: var(--background);
+}
+
+/* --- MODO RETRABALHO --- */
+.btn--rework {
+    background-color: transparent;
+    color: #E67E22; /* Laranja para atenção */
+    border: 1px solid #FAD7A0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn--rework.active {
+    background-color: #FDEBD0;
+    border-color: #E67E22;
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
+}
+
+.circular-timer.rework-mode .circular-timer__progress {
+    stroke: #E67E22; /* Cor laranja para a barra de progresso */
+}
+
+.summary-item__label--rework {
+    color: #E67E22;
+    font-weight: 600;
+}
+
+.waste-cost-container {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* --- ESTILOS DE RESPONSIVIDADE --- */
+
+.menu-toggle { display: none; }
+
+/* Para tablets e celulares (telas menores que 900px) */
+@media (max-width: 900px) {
+    .app-header { padding: 0 20px; }
+    .app-header__content { flex-wrap: wrap; }
+    .app-header__nav {
+        display: none;
+        order: 3;
+        width: 100%;
+        flex-direction: column;
+        padding: 10px 0;
+    }
+    .app-header__nav.open {
+        display: flex;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .menu-toggle {
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        display: flex; /* Torna o botão visível */
+        flex-direction: column;
+        justify-content: space-around;
+        padding: 8px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+    }
+
+    .menu-toggle span {
+        width: 100%;
+        height: 2px;
+        background-color: var(--secondary);
+        border-radius: 2px;
+    }
+
+    .page-header h2 {
+        font-size: 2rem;
+    }
+
+    .calculator-grid {
+        grid-template-columns: 1fr; /* Muda para uma única coluna */
+        gap: 20px;
+    }
+
+    .summary-panel {
+        grid-row: 1; /* Opcional: Move o resumo para o topo em telas pequenas */
+    }
+
+    .history-container, .recipes-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Ajustes finos para celulares (telas menores que 500px) */
+@media (max-width: 500px) {
+    .main-content {
+        padding: 15px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .modal__content {
+        width: 95%;
+        height: 95%;
+        overflow-y: auto;
+    }
+}
+
+/* --- RODAPÉ DE AÇÃO FIXO --- */
+.fixed-action-footer {
+    position: sticky;
+    bottom: 0;
+    /* O left e right 0 garantem que ele ocupe a largura do container pai */
+    left: 0; /* Adicionado para garantir o alinhamento */
+    width: 100%; /* Garante que ocupe toda a largura */
+    /* A margem negativa foi removida para um comportamento mais previsível */
+    padding: 20px;
+    box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+    background: var(--surface);
+    display: flex;
+    justify-content: space-between; /* Alinha os botões nas extremidades */
+    align-items: center;
+    z-index: 500;
+}
+.fixed-action-footer .btn {
+    padding: 16px 35px; /* Aumenta a altura dos botões */
+    font-size: 1.1rem;
+    min-width: 150px; /* Garante uma largura mínima */
+    text-align: center;
+}
+
+
+.fixed-action-footer #calculatePriceBtn {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px 30px; /* Aumenta a altura para aprox. 58-60px */
+    font-size: 1.35rem;
+    font-weight: 700; /* Tipografia mais pesada */
+    letter-spacing: 0.5px;
+    /* Sombra mais suave e difusa */
+    box-shadow: 0 12px 28px rgba(249, 83, 198, 0.25), 0 5px 12px rgba(0,0,0,0.1);
+    margin: 0 auto; /* Centraliza quando for o único botão visível */
+}
+
+.fixed-action-footer #calculatePriceBtn:hover, .fixed-action-footer #calculatePriceBtn:focus {
+    /* Simplifica o hover: remove a animação de pulso e apenas intensifica a sombra */
+    box-shadow: 0 15px 35px rgba(249, 83, 198, 0.3), 0 8px 15px rgba(0,0,0,0.12); /* Sombra mais forte no hover */
+    transform: translateY(-2px); /* Adiciona um leve efeito de elevação */
+}
+
+/* --- ESTILOS PARA O MODAL DE AUTENTICAÇÃO --- */
+.form__switch {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.form__switch a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.form__switch a:hover {
+    text-decoration: underline;
+}
+
+/* --- ESTILOS PARA O BOTÃO DE LOGIN COM GOOGLE --- */
+.form__divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-light);
+    margin: 20px 0;
+    font-size: 0.8rem; 
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.auth-divider:not(:empty)::before {
+    margin-right: .5em;
+}
+
+.auth-divider:not(:empty)::after {
+    margin-left: .5em;
+}
+
+.form__link {
+    display: block;
+    text-align: right;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    color: var(--text-light);
+}
+
+.btn--google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn--google:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-color: #ccc;
+    transform: translateY(-1px);
+}
+
+/* Mensagem de erro abaixo do campo */
+.form-error-message {
+    color: #FF3B30;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 5px;
+    min-height: 1em; /* Garante que o layout não pule quando a mensagem aparece */
+}
+
+/* Melhoria no indicador de força da senha */
+.password-strength {
+    margin-top: 15px;
+}
+.password-strength ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.password-strength__check {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.3s ease;
+}
+.password-strength__check.password-strength__check--invalid { color: #FF3B30; }
+.password-strength__check.password-strength__check--valid { color: #47D764; }
+.password-strength__check i { width: 14px; height: 14px; }
+
+
+/* ============================================ */
+/* ESTILOS DO MODAL DE AUTENTICAÇÃO (MELHORADO) */
+/* ============================================ */
+
+/* Conteúdo principal do modal de autenticação */
+.modal__content--auth {
+    display: flex;
+    padding: 0; /* Remove o padding padrão para as colunas ocuparem todo o espaço */
+    max-width: 800px;
+    width: 90%;
+    overflow: hidden; /* Garante que os cantos arredondados funcionem */
+    background-color: #fff;
+}
+
+/* Coluna da Imagem (Esquerda) */
+.auth-card {
+    flex-basis: 45%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.auth-card__logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.auth-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: white; /* Sobrescreve a cor padrão de h2 */
+}
+
+.auth-card p {
+    font-size: 1rem;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+/* Coluna do Formulário (Direita) */
+.auth-form-column {
+    flex-basis: 55%; 
+    padding: 50px 60px; /* Aumenta o espaçamento interno */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    /* Adiciona rolagem interna se o conteúdo for muito alto */
+    overflow-y: auto;
+    /* Limita a altura máxima para caber em telas menores */
+    max-height: 90vh;
+}
+
+/* Ajusta o botão de fechar para o canto superior direito da coluna do formulário */
+.auth-form-column .modal__close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+
+.auth-form h3 {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--primary-darker);
+    margin-bottom: 25px;
+}
+@media (max-width: 768px) {
+    .modal__content--auth {
+        flex-direction: column;
+        width: 95%;
+        max-width: 420px; /* Limita a largura em telas de celular */
+    }
+
+    .auth-form-column {
+        flex-basis: auto; /* Permite que a coluna do formulário cresça */
+        padding: 30px;
+    }
+
+    .auth-form h3 {
+        font-size: 1.8rem; /* Diminui o título no mobile */
+    }
+    .auth-card {
+        display: none; /* Oculta a coluna da imagem em telas pequenas para focar no formulário */
+    }
+    .auth-form { padding: 40px 30px; }
+    .modal__content--auth { max-width: 450px; }
+}
+
+/* Estilos específicos para os grupos de formulário no modal de autenticação */
+.auth-form .form-group {
+    margin-bottom: 20px; /* Aumenta o espaço entre os campos */
+}
+
+.auth-form .form-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px; /* Espaço entre o label e o input */
+    font-size: 0.9rem;
+}
+
+
+.btn__icon--google { 
+    width: 20px;
+    height: 20px;
+}
+
+/* --- NOTIFICAÇÕES TOAST --- */
+.toast-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 2000; /* Garante que fique acima de outros elementos */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--surface);
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-hover);
+    border-left: 5px solid; /* A cor será definida pela classe de modificação */
+    min-width: 320px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast.hide {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.toast .toast-icon {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.toast .toast-message {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* Modificadores de Tipo */
+.toast.success {
+    border-color: #47D764; /* Verde sucesso */
+}
+.toast.success .toast-icon {
+    color: #47D764;
+}
+
+.toast.error {
+    border-color: #FF3B30; /* Vermelho erro */
+}
+.toast.error .toast-icon {
+    color: #FF3B30;
+}
+
+.toast.info {
+    border-color: var(--primary); /* Roxo primário */
+}
+.toast.info .toast-icon {
+    color: var(--primary);
+}

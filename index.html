@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Preço para Amigurumis</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <!-- Biblioteca para gerar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Biblioteca de Ícones (Feather Icons) -->
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <!-- Hero Page Section -->
+    <div id="hero-page" class="hero">
+        <div class="hero__content">
+            <h1 class="hero__title">Amigurumi<span class="hero__title--accent">Preço</span></h1>
+            <div class="hero__illustration">
+                <div class="hero__bloom"></div>
+                <img src="images/logo.png" alt="Logo AmigurumiPreço" class="hero__logo">
+            </div>
+            <p class="hero__subtitle">A ferramenta definitiva para precificar seu crochê com confiança e precisão.</p>
+            <button id="enter-app-btn" class="btn btn--primary btn--large">Começar a Precificar</button>
+        </div>
+        <div class="hero__background">
+            <div class="hero__blob hero__blob--1"></div>
+            <div class="hero__blob hero__blob--2"></div>
+            <div class="hero__blob hero__blob--3"></div>
+            <div class="hero__blob hero__blob--4"></div>
+            <div class="hero__blob hero__blob--5"></div>
+        </div>
+    </div>
+
+
+    <!-- Main App Container (initially hidden) -->
+    <div id="main-app" class="container-top-nav">
+        <header class="app-header">
+            <div class="app-header__content">
+                <h1 class="app-header__title">Amigurumi<span class="app-header__title--accent">Preço</span></h1>
+                <nav id="main-nav" class="app-header__nav">
+                    <button class="nav-btn nav-btn--active" data-tab="calculator">
+                        <i data-feather="tool" class="nav-btn__icon"></i>
+                        <span>Calculadora</span>
+                    </button>
+                    <button class="nav-btn" data-tab="recipes">
+                        <i data-feather="book-open" class="nav-btn__icon"></i>
+                        <span>Receitas</span>
+                    </button>
+                    <button class="nav-btn" data-tab="history">
+                        <i data-feather="archive" class="nav-btn__icon"></i>
+                        <span>Histórico</span>
+                    </button>
+                </nav>
+                <div class="app-header__actions">
+                    <div class="settings">
+                        <div class="form-group">
+                            <label for="baseSalary">Salário/Hora (R$)</label>
+                            <input type="number" id="baseSalary" placeholder="30.00" step="0.01" value="30.00">
+                            <a href="#" id="openSalaryHelper" class="salary-calculator-link">Não sabe o seu? Calcule aqui</a>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Login (será escondido após o login) -->
+                    <button id="loginBtn" class="btn btn--outline">Login / Registrar</button>
+
+                    <!-- Área do Usuário Logado (inicialmente escondida) -->
+                    <div id="userInfoContainer" class="user-info" style="display: none;">
+                        <span id="userNameDisplay" class="user-info__name"></span>
+                        <button id="logoutBtn" class="user-info__logout">Sair</button>
+                    </div>
+
+                    <button id="menu-toggle" class="menu-toggle">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Calculator Tab -->
+            <section id="calculator-tab" class="tab-pane tab-pane--active">
+                <div class="page-header">
+                    <h2>Calculadora de Preços</h2>
+                    <p>Insira os detalhes da sua peça para calcular o preço final</p>
+                </div>
+
+                <!-- Wizard de Passos -->
+                <div class="wizard-steps">
+                    <div class="wizard-steps__item wizard-steps__item--active" data-step="1">
+                        <div class="wizard-steps__counter">1</div>
+                        <p class="wizard-steps__title">Informações</p>
+                    </div>
+                    <div class="wizard-steps__line"></div>
+                    <div class="wizard-steps__item" data-step="3">
+                        <div class="wizard-steps__counter">3</div>
+                        <p class="wizard-steps__title">Materiais</p>
+                    </div>
+                    <div class="wizard-steps__line"></div>
+                    <div class="wizard-steps__item" data-step="2">
+                        <div class="wizard-steps__counter">2</div>
+                        <p class="wizard-steps__title">Tempo</p>
+                    </div>
+                    <div class="wizard-steps__line"></div>
+                    <div class="wizard-steps__item" data-step="4">
+                        <div class="wizard-steps__counter">4</div>
+                        <p class="wizard-steps__title">Preço Final</p>
+                    </div>
+                </div>
+
+                <div id="calculator-form-steps">
+                    <!-- Passo 1: Informações da Peça -->
+                    <div class="form-step active-step" data-step-id="1">
+                        <div class="card">
+                            <h3 class="card__title"><i data-feather="clipboard"></i>Informações da Peça</h3>
+                            <div class="form-group">
+                                <label for="pieceName">Nome da Peça</label>
+                                <div class="form-group__wrapper">
+                                    <i data-feather="edit-3"></i>
+                                    <input type="text" id="pieceName" placeholder="Ex: Urso Amigurumi">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="pieceType">Tipo de Peça</label>
+                                <select id="pieceType">
+                                    <option value="">Selecione um tipo</option>
+                                    <option value="amigurumi">Amigurumi</option>
+                                    <option value="manta">Manta</option>
+                                    <option value="bolsa">Bolsa</option>
+                                    <option value="acessorio">Acessório</option>
+                                    <option value="outro">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 3: Materiais -->
+                    <div class="form-step" data-step-id="3">
+                        <div class="card">
+                            <h3 class="card__title"><i data-feather="disc"></i>Fios Utilizados</h3>
+                            <p class="card__hint">Pese o novelo antes e depois do uso para calcular o custo exato.</p>
+                            <div id="yarnsContainer"></div>
+                            <button id="addYarnBtn" class="btn btn--secondary btn--small">+ Adicionar Fio</button>
+                        </div>
+                        <div class="card">
+                            <h3 class="card__title"><i data-feather="scissors"></i>Aviamentos e Outros Materiais</h3>
+                            <div id="materialsContainer"></div>
+                            <p class="card__hint">Ex: enchimento, olhos de segurança, botões, zíperes.</p>
+                            <button id="addMaterialBtn" class="btn btn--secondary btn--small">+ Adicionar Material</button>
+                            <div class="waste-cost-container">
+                                <button id="addWasteCostBtn" class="btn btn--secondary btn--small">+ Custo de Desperdício</button>
+                                <p>Custo de desperdício: <strong id="wasteCostDisplay">R$ 0.00</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 2: Tempo de Produção -->
+                    <div class="form-step" data-step-id="2">
+                        <div class="card">
+                            <h3 class="card__title"><i data-feather="clock"></i>Tempo de Produção</h3>
+                            <div class="circular-timer">
+                                <svg class="circular-timer__svg" viewBox="0 0 100 100">
+                                    <circle class="circular-timer__background" cx="50" cy="50" r="45"></circle>
+                                    <circle id="timer-progress" class="circular-timer__progress" cx="50" cy="50" r="45"></circle>
+                                </svg>
+                                <div id="timer-text" class="circular-timer__text">00:00:00</div>
+                            </div>
+                            <div class="circular-timer__controls">
+                                <button id="startBtn" class="btn btn--start">
+                                    <i data-feather="play"></i><span>Iniciar</span>
+                                </button>
+                                <button id="pauseBtn" class="btn btn--pause" disabled>
+                                    <i data-feather="pause"></i><span>Pausar</span>
+                                </button> 
+                                <button id="resetBtn" class="btn btn--stop">
+                                    <i data-feather="rotate-ccw"></i><span>Resetar</span>
+                                </button>
+                            </div>
+                            <div class="circular-timer__actions">
+                                <button id="reworkModeBtn" class="btn btn--rework">
+                                    <i data-feather="alert-triangle"></i> Modo Retrabalho
+                                </button>
+                                <button id="saveSessionBtn" class="btn btn--save-session">Salvar Sessão</button>
+                            </div>
+                            <p class="circular-timer__info">Tempo total da peça: <strong id="totalPieceTimeDisplay">0h 0m</strong></p>
+                            <p class="card__hint"><strong>Dica:</strong> Após terminar, volte à etapa 'Materiais' para inserir o peso final dos fios.</p>
+                        </div>
+                        <div class="card">
+                            <h3 class="card__title"><i data-feather="briefcase"></i>Custo de Mão de Obra</h3>
+                             <div class="form-group form-group--inline">
+                                <p class="form-group__label">Adicionar tempo manual:</p>
+                                <div class="input-group--inline">
+                                    <input type="number" id="manualHours" placeholder="0" min="0" class="form-group__input--small">
+                                    <label for="manualHours">Horas</label>
+                                </div>
+                                <div class="input-group--inline">
+                                    <input type="number" id="manualMinutes" placeholder="0" min="0" max="59" class="form-group__input--small">
+                                    <label for="manualMinutes">Min</label>
+                                </div>
+                                <button id="addTimeBtn" class="btn btn--secondary btn--small">Adicionar</button>
+                            </div>
+                            <div class="labor-cost">
+                                <p>Tempo trabalhado: <strong id="laborTimeDisplay">0h</strong></p>
+                                <p>Salário/hora: <strong id="laborRateDisplay">R$ 30.00</strong></p>
+                                <p>Custo de mão de obra: <strong id="laborCostDisplay">R$ 0.00</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 4: Preço Final -->
+                    <div class="form-step" data-step-id="4">
+                        <div class="card card--summary">
+                            <h3 class="card__title">Resumo de Custos</h3>
+                            
+                            <div class="summary-item">
+                                <span class="summary-item__label">Custo de Fios:</span>
+                                <span class="summary-item__value" id="yarnCostDisplay">R$ 0.00</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-item__label">Custo de Outros Materiais:</span>
+                                <span class="summary-item__value" id="materialsCostDisplay">R$ 0.00</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-item__label">Custo de Mão de Obra:</span>
+                                <span class="summary-item__value" id="laborCostSummary">R$ 0.00</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-item__label summary-item__label--rework">Custo de Retrabalho:</span>
+                                <span class="summary-item__value" id="reworkCostDisplay">R$ 0.00</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-item__label">Custo Total:</span>
+                                <span class="summary-item__value" id="totalCostDisplay">R$ 0.00</span>
+                            </div>
+
+                            <hr class="divider">
+
+                            <!-- Bloco de Configurações de Preço -->
+                            <div class="price-settings-block">
+                                <h4 class="settings-title">Ajustes Finais</h4>
+                                <div class="settings-inputs">
+                                    <div class="form-group">
+                                        <label for="indirectCosts">Custos Indiretos (%)</label>
+                                        <div class="form-group__wrapper">
+                                            <i data-feather="percent"></i>
+                                            <input type="number" id="indirectCosts" placeholder="15" value="15" min="0" step="1">
+                                        </div>
+                                    </div>
+        
+                                    <div class="form-group">
+                                        <label for="profitMargin">Margem de Lucro (%)</label>
+                                        <div class="form-group__wrapper">
+                                            <i data-feather="percent"></i>
+                                            <input type="number" id="profitMargin" placeholder="30" value="30" min="0" step="1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="summary-final">
+                                <p class="summary-final__label">Preço Final Sugerido</p>
+                                <p class="summary-final__value" id="finalPriceDisplay"><span class="summary-final__currency">R$</span> 0.00</p>
+                            </div>
+
+                            <button id="savePieceBtn" class="btn btn--primary btn--full">Salvar Peça</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rodapé de Ação Fixo -->
+                <div class="fixed-action-footer">
+                    <button id="prev-step-btn" class="btn btn--secondary">Voltar</button>
+                    <button id="next-step-btn" class="btn btn--primary">Avançar</button>
+                    <!-- <button id="calculatePriceBtn" class="btn btn--primary btn--large">Calcular Preço Final</button> -->
+                </div>
+            </section>
+
+            <!-- Recipes Tab -->
+            <section id="recipes-tab" class="tab-pane">
+                <div class="page-header">
+                    <h2>Minhas Receitas</h2>
+                    <p>Gerencie suas receitas de fios e materiais</p>
+                </div>
+
+                <div class="recipes-container">
+                    <button id="addRecipeBtn" class="btn btn--primary">+ Nova Receita</button>
+                    <div id="recipesGrid" class="recipes-grid"></div>
+                </div>
+            </section>
+
+            <!-- History Tab -->
+            <section id="history-tab" class="tab-pane">
+                <div class="page-header">
+                    <h2>Histórico de Peças</h2>
+                    <p>Acompanhe todas as peças que você precificou</p>
+                </div>
+
+                <div class="search-bar-container">
+                    <input type="text" id="historySearchInput" placeholder="🔎 Buscar por nome ou tipo...">
+                </div>
+
+                <div id="historyContainer" class="history-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Adding Yarn -->
+    <div id="yarnModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3 id="yarnModalTitle">Adicionar Fio</h3>
+                <button class="modal__close">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div class="form-group">
+                    <label for="yarnName">Nome do Fio</label>
+                    <input type="text" id="yarnName" placeholder="Ex: Fio Bege">
+                </div>
+                <div class="form-group">
+                    <label for="yarnInitialWeight">Peso Inicial (g)</label>
+                    <input type="number" id="yarnInitialWeight" placeholder="100" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="yarnFinalWeight">Peso Final (g)</label>
+                    <input type="number" id="yarnFinalWeight" placeholder="50" step="0.1">
+                </div>
+                <div class="form-group">
+                    <!-- Calculadora de Preço por Grama -->
+                    <div class="price-helper">
+                        <p class="price-helper__title">Não sabe o preço por grama? Calcule aqui:</p>
+                        <div class="helper-inputs">
+                            <div class="form-group">
+                                <label for="skeinPrice">Preço do novelo (R$)</label>
+                                <input type="number" id="skeinPrice" placeholder="20.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="skeinWeight">Peso do novelo (g)</label>
+                                <input type="number" id="skeinWeight" placeholder="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <label for="yarnPricePerGram">Preço por Grama (R$)</label>
+                    <input type="number" id="yarnPricePerGram" placeholder="0.20" step="0.001">
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button id="cancelYarnBtn" class="btn btn--secondary">Cancelar</button>
+                <button id="confirmYarnBtn" class="btn btn--primary">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Recipe -->
+    <div id="recipeModal" class="modal"> 
+        <div class="modal__content">
+            <div class="modal__header"> 
+                <h3>Criar Nova Receita</h3>
+                <button class="modal__close">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div class="form-group">
+                    <label for="recipeName">Nome da Receita</label>
+                    <input type="text" id="recipeName" placeholder="Ex: Receita de Urso Padrão">
+                </div>
+                <div class="form-group">
+                    <label for="recipeDescription">Descrição Curta</label>
+                    <input type="text" id="recipeDescription" placeholder="Ex: Urso com macacão azul">
+                </div>
+                <div class="form-group">
+                    <label for="recipeSalePrice">Preço de Venda Sugerido (R$)</label>
+                    <input type="number" id="recipeSalePrice" placeholder="150.00">
+                </div>
+                <hr class="divider">
+                <div id="recipe-materials-list"></div>
+                <button id="addYarnToRecipeBtn" class="btn btn--secondary btn--small">+ Adicionar Fio</button>
+                <button id="addMaterialToRecipeBtn" class="btn btn--secondary btn--small">+ Adicionar Aviamento</button>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="recipeSteps">Passo a Passo (Opcional)</label>
+                    <textarea id="recipeSteps" placeholder="Anote aqui o passo a passo, links ou informações importantes." rows="4"></textarea>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button id="cancelRecipeBtn" class="btn btn--secondary">Cancelar</button>
+                <button id="confirmRecipeBtn" class="btn btn--primary">Salvar Receita</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Other Materials -->
+    <div id="materialModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header"> 
+                <h3 id="materialModalTitle">Adicionar Material</h3>
+                <button class="modal__close">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div class="form-group">
+                    <label for="materialName">Nome do Material</label>
+                    <input type="text" id="materialName" placeholder="Ex: Olhos de segurança (par)">
+                </div>
+                <div class="form-group">
+                    <label for="materialQuantity">Quantidade</label>
+                    <input type="number" id="materialQuantity" placeholder="1" value="1" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="materialPrice">Preço Unitário (R$)</label>
+                    <input type="number" id="materialPrice" placeholder="2.50" step="0.01">
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button id="cancelMaterialBtn" class="btn btn--secondary">Cancelar</button>
+                <button id="confirmMaterialBtn" class="btn btn--primary">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Calculadora de Salário/Hora -->
+    <div id="salaryHelperModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3>Calculadora de Salário/Hora</h3>
+                <button class="modal__close">&times;</button>
+            </div>
+            <div class="modal__body">
+                <p>Responda as perguntas abaixo para descobrir uma sugestão de valor para sua hora de trabalho.</p>
+                <div class="form-group">
+                    <label for="desiredSalary">Qual seu salário mensal desejado? (R$)</label>
+                    <input type="number" id="desiredSalary" placeholder="2000">
+                </div>
+                <div class="form-group">
+                    <label for="hoursPerDay">Quantas horas você trabalha por dia?</label>
+                    <input type="number" id="hoursPerDay" placeholder="6">
+                </div>
+                <div class="form-group">
+                    <label for="daysPerWeek">Quantos dias você trabalha por semana?</label>
+                    <input type="number" id="daysPerWeek" placeholder="5">
+                </div>
+                <div id="salaryResultDisplay" class="salary-helper__result" style="display: none;">
+                    Seu salário/hora sugerido é: <strong>R$ 0.00</strong>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button id="applySalaryBtn" class="btn btn--primary" disabled>Aplicar Valor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODAL DE AUTENTICAÇÃO (LOGIN E REGISTRO)      -->
+    <!-- ============================================ -->
+    <div id="authModal" class="modal">
+        <div class="modal__content modal__content--auth">
+            <!-- Coluna de Imagem (decorativa) -->
+            <div class="auth-card">
+                <img src="images/logo.png" alt="Logo AmigurumiPreço" class="auth-card__logo" loading="lazy">
+                <h2>Bem-vinda de volta!</h2>
+                <p>Faça login para acessar suas receitas e histórico de precificação.</p>
+            </div>
+
+            <!-- Coluna do Formulário -->
+            <div class="auth-form-column">
+                <button class="modal__close">&times;</button>
+                <h3 id="authModalTitle">Login</h3>
+                <!-- Formulário de Login -->
+                <form id="loginForm" class="form form--auth form--active">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required placeholder="seu@email.com" autocomplete="email">
+                        <div class="form-error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Senha</label>
+                        <div class="form-group__wrapper form-group__wrapper--password">
+                            <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
+                            <button type="button" class="password-toggle" data-target="loginPassword"><i data-feather="eye"></i></button>
+                        </div>
+                        <div class="form-error-message"></div>
+                        <a href="#" id="forgotPasswordLink" class="form__link">Esqueceu a senha?</a>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full">Entrar</button>
+
+                    <!-- Divisor e Botão de Login com Google -->
+                    <div class="form__divider"><span>ou</span></div>
+                    <button type="button" id="googleLoginBtn" class="btn btn--google">
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="btn__icon--google"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg>
+                        <span>Entrar com Google</span>
+                    </button>
+
+                    <p class="form__switch">Não tem uma conta? <a href="#" id="showRegister">Registre-se</a></p>
+                </form>
+
+                <!-- Formulário de Registro (inicialmente escondido) -->
+                <form id="registerForm" class="form form--auth">
+                    <div class="form-group">
+                        <label for="registerName">Seu Nome</label>
+                        <input type="text" id="registerName" required placeholder="Como podemos te chamar?" autocomplete="name">
+                        <div class="form-error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required placeholder="seu@email.com" autocomplete="email">
+                        <div class="form-error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Senha</label>
+                        <div class="form-group__wrapper form-group__wrapper--password">
+                            <input type="password" id="registerPassword" required placeholder="Crie uma senha segura" autocomplete="new-password">
+                            <button type="button" class="password-toggle" data-target="registerPassword"><i data-feather="eye"></i></button>
+                        </div>
+                        <!-- Indicador de Força da Senha -->
+                        <div id="password-strength-indicator" class="password-strength">
+                            <ul>
+                                <li id="length-check" class="password-strength__check password-strength__check--invalid">
+                                    <i data-feather="x-circle"></i> Pelo menos 8 caracteres
+                                </li>
+                                <li id="case-check" class="password-strength__check password-strength__check--invalid">
+                                    <i data-feather="x-circle"></i> Letras maiúsculas e minúsculas
+                                </li>
+                                <li id="number-check" class="password-strength__check password-strength__check--invalid">
+                                    <i data-feather="x-circle"></i> Pelo menos um número
+                                </li>
+                                <li id="special-check" class="password-strength__check password-strength__check--invalid">
+                                    <i data-feather="x-circle"></i> Pelo menos um caractere especial
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full">Criar Conta</button>
+                    <p class="form__switch">Já tem uma conta? <a href="#" id="showLogin">Faça Login</a></p>
+                </form>
+        </div>
+    </div>
+
+    <!-- ADICIONE ESTES SCRIPTS DO FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- FIM DOS SCRIPTS DO FIREBASE -->
+
+    <!-- Contêiner para as notificações Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+</body>
+<script src="./assets/js/app.js" type="module"></script>
+<script>
+    feather.replace(); // Ativa a biblioteca de ícones
+</script>
+</html>

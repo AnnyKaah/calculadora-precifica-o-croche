@@ -79,6 +79,11 @@ export const elements = {
     saveSessionBtn: document.getElementById('saveSessionBtn'),
     addTimeBtn: document.getElementById('addTimeBtn'),
     addRecipeBtn: document.getElementById('addRecipeBtn'),
+    editTimeBtn: document.getElementById('editTimeBtn'),
+    editTimeModal: document.getElementById('editTimeModal'),
+    editTimeHoursInput: document.getElementById('editTimeHours'),
+    editTimeMinutesInput: document.getElementById('editTimeMinutes'),
+    confirmEditTimeBtn: document.getElementById('confirmEditTimeBtn'),
 
     // Modals
     yarnModal: document.getElementById('yarnModal'),

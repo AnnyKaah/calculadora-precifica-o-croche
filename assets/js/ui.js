@@ -1,8 +1,7 @@
 import { state, elements } from './state.js';
+import { updateCalculations, calculatePricePerGramHelper, calculateSalaryHelper, updateWasteCost } from './calculations.js';
 import { saveFormState, saveBaseSalary } from './storage.js';
-import { updateCalculations, calculatePricePerGramHelper, calculateSalaryHelper } from './calculations.js';
-import { setupTimerEventListeners } from './timer.js'; 
-import { deleteHistoryItem, generatePDF, loadPieceFromHistory, savePiece, saveRecipe, loadRecipeMaterials } from './pieceManager.js';
+import { deleteHistoryItem, loadPieceFromHistory, savePiece, saveRecipe, loadRecipeMaterials, generateCurrentPiecePDF, generateCurrentPieceCSV, addMaterial } from './pieceManager.js';
 
 export function showToast(message, type = 'info', duration = 4000) {
     const container = document.getElementById('toast-container');
@@ -20,27 +19,18 @@ export function showToast(message, type = 'info', duration = 4000) {
     }, duration);
 }
 
-/**
- * Anuncia uma mensagem para leitores de tela usando uma região ARIA-live.
- * @param {string} message A mensagem a ser anunciada.
- */
 export function announceForScreenReaders(message) {
     const container = document.getElementById('sr-announcer');
-    if (!container) {
-        console.warn('Elemento #sr-announcer não encontrado para acessibilidade.');
-        return;
-    }
-    // Limpa a mensagem anterior e define a nova para garantir que seja lida
+    if (!container) return;
     container.textContent = '';
     setTimeout(() => { container.textContent = message; }, 100);
 }
 
 export function switchTab(tabName) {
-    const newTab = document.getElementById(`${tabName}-tab`); // Encontra a nova aba pelo ID
-    const currentTab = document.querySelector('.tab-pane--active'); // Encontra a aba atualmente ativa
+    const newTab = document.getElementById(`${tabName}-tab`);
+    const currentTab = document.querySelector('.tab-pane--active');
     if (newTab === currentTab) return;
 
-    // Atualiza o estado ativo dos botões de navegação
     elements.navButtons.forEach(btn => btn.classList.toggle('nav-btn--active', btn.dataset.tab === tabName));
 
     if (currentTab) {
@@ -51,18 +41,12 @@ export function switchTab(tabName) {
     }
     newTab.classList.add('tab-pane--active');
 
-    // Fecha o menu de navegação mobile após a seleção, se estiver aberto
     if (elements.mainNav && elements.mainNav.classList.contains('open')) {
         elements.mainNav.classList.remove('open');
     }
-
-
-    // A renderização agora é tratada pelo pieceManager ou outro módulo específico
-    // if (tabName === 'history') renderHistory();
-    // if (tabName === 'recipes') renderRecipes();
 }
 
-let isRecipeMode = false; // Flag para controlar o contexto do modal
+export let isRecipeMode = false;
 
 export function openYarnModal(forRecipe = false) {
     isRecipeMode = forRecipe;
@@ -89,51 +73,20 @@ export function openMaterialModal(forRecipe = false) {
 }
 
 function openRecipeModal() {
-    // Limpa o rascunho da receita e os campos do formulário
     state.newRecipeDraft = { name: '', description: '', yarns: [], otherMaterials: [] };
     elements.recipeNameInput.value = '';
     elements.recipeDescriptionInput.value = '';
     elements.recipeSteps.value = '';
     document.getElementById('recipeSalePrice').value = '';
-
-    // Renderiza a lista (vazia) de materiais da receita
     renderRecipeMaterials();
-
     openModal(elements.recipeModal);
 }
 
-/**
- * Abre um modal e implementa o "focus trap" para acessibilidade.
- * @param {HTMLElement} modalElement O elemento do modal a ser aberto.
- */
 export function openModal(modalElement) {
     if (!modalElement) return;
     modalElement.classList.add('active');
-
-    const focusableElements = modalElement.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    function trapFocus(e) {
-        const isTabPressed = e.key === 'Tab';
-        if (!isTabPressed) return;
-
-        if (e.shiftKey) { // Shift + Tab
-            if (document.activeElement === firstElement) {
-                lastElement.focus();
-                e.preventDefault();
-            }
-        } else { // Tab
-            if (document.activeElement === lastElement) {
-                firstElement.focus();
-                e.preventDefault();
-            }
-        }
-    }
-
-    modalElement.addEventListener('keydown', trapFocus);
+    const focusableElements = modalElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusableElements.length) focusableElements[0].focus();
 }
 
 function openSalaryHelperModal() {
@@ -146,58 +99,33 @@ function openSalaryHelperModal() {
     openModal(elements.salaryHelperModal);
 }
 
-export function addMaterial() {
-    // Resetar erros visuais anteriores
-    elements.materialNameInput.classList.remove('input-error');
-    elements.materialQuantityInput.classList.remove('input-error');
-    elements.materialPriceInput.classList.remove('input-error');
-
-    const name = elements.materialNameInput.value.trim();
-    const quantity = parseInt(elements.materialQuantityInput.value) || 1;
-    const price = parseFloat(elements.materialPriceInput.value) || 0;
-
-    // Validações específicas
-    if (!name) {
-        showToast('O nome do material não pode estar vazio.', 'error');
-        elements.materialNameInput.classList.add('input-error');
-        return;
-    }
-    if (quantity <= 0) {
-        showToast('A quantidade deve ser maior que zero.', 'error');
-        elements.materialQuantityInput.classList.add('input-error');
-        return;
-    }
-    if (price <= 0) {
-        showToast('O preço unitário deve ser maior que zero.', 'error');
-        elements.materialPriceInput.classList.add('input-error');
-        return;
-    }
-
-    const cost = quantity * price;
-    const newMaterial = { id: Date.now(), name, quantity, price, cost };
-
-    if (isRecipeMode) {
-        state.newRecipeDraft.otherMaterials.push(newMaterial);
-        renderRecipeMaterials();
-        showToast('Material adicionado à receita!', 'success');
-    } else {
-        state.otherMaterials.push(newMaterial);
-        renderMaterials();
-        updateCalculations();
-        saveFormState();
-    }
-
-    elements.materialModal.classList.remove('active');
-}
-
 export function addYarn() {
     const name = elements.yarnNameInput.value.trim();
     const pricePerGram = parseFloat(elements.yarnPricePerGramInput.value);
-    if (!name || !pricePerGram) {
-        showToast('Preencha o nome do fio e o preço por grama.', 'error');
+    const initialWeight = parseFloat(elements.yarnInitialWeightInput.value);
+    
+    if (!name || isNaN(pricePerGram) || isNaN(initialWeight) || initialWeight <= 0) {
+        showToast('Preencha o nome, preço e o peso inicial do novelo.', 'error');
         return;
     }
-    const newYarn = { id: Date.now(), name, pricePerGram, usedWeight: 0, cost: 0 };
+
+    let finalWeight = parseFloat(elements.yarnFinalWeightInput.value);
+    if (isNaN(finalWeight)) finalWeight = initialWeight;
+
+    let usedWeight = initialWeight - finalWeight;
+    if (usedWeight < 0) usedWeight = 0;
+
+    const cost = usedWeight * pricePerGram;
+
+    const newYarn = { 
+        id: Date.now(), 
+        name, 
+        pricePerGram, 
+        initialWeight,
+        finalWeight,
+        usedWeight,
+        cost 
+    };
 
     if (isRecipeMode) {
         state.newRecipeDraft.yarns.push(newYarn);
@@ -212,10 +140,16 @@ export function addYarn() {
     elements.yarnModal.classList.remove('active');
 }
 
-export function updateYarnWeight(id, usedWeight) {
+export function updateYarnWeight(id, newFinalWeight) {
     const yarn = state.yarns.find(y => y.id === id);
     if (yarn) {
-        yarn.usedWeight = usedWeight;
+        if (newFinalWeight > yarn.initialWeight) {
+            showToast(`Ops! O peso final não pode ser maior que o inicial (${yarn.initialWeight}g)`, 'error');
+            return; 
+        }
+        yarn.finalWeight = newFinalWeight;
+        yarn.usedWeight = yarn.initialWeight - yarn.finalWeight;
+        if (yarn.usedWeight < 0) yarn.usedWeight = 0;
         yarn.cost = yarn.usedWeight * yarn.pricePerGram;
         renderYarns();
         updateCalculations();
@@ -226,7 +160,6 @@ export function updateYarnWeight(id, usedWeight) {
 export function deleteYarn(id) {
     state.yarns = state.yarns.filter(yarn => yarn.id !== id);
     renderYarns();
-    updateCalculations();
     saveFormState();
 }
 
@@ -234,39 +167,64 @@ export function deleteMaterial(id) {
     state.otherMaterials = state.otherMaterials.filter(material => material.id !== id);
     renderMaterials();
     updateCalculations();
-    saveFormState();
 }
 
 export function renderMaterials() {
-    elements.materialsContainer.innerHTML = state.otherMaterials.length === 0
-        ? '<p style="color: var(--text-light); text-align: center;">Nenhum outro material adicionado</p>'
-        : state.otherMaterials.map(material => `
-            <div class="yarn-item">
-                <div class="yarn-info">
-                    <div class="yarn-name">${material.name} (${material.quantity}x R$ ${material.price.toFixed(2)})</div>
+    const container = elements.materialsContainer;
+    const subtotalDisplay = document.getElementById('materialsSubtotalDisplay');
+    const subtotal = state.otherMaterials.reduce((sum, m) => sum + m.cost, 0);
+
+    if (state.otherMaterials.length === 0) {
+        container.innerHTML = `<div class="empty-state" style="text-align: center; padding: 20px; color: #aaa; border: 1px dashed #ddd; border-radius: 12px;"><i data-feather="scissors" style="width: 24px; height: 24px; opacity: 0.5;"></i><p style="margin: 5px 0 0; font-size: 0.9rem;">Nenhum material extra.</p></div>`;
+    } else {
+        container.innerHTML = state.otherMaterials.map(material => `
+            <div class="material-card">
+                <div class="material-card__info">
+                    <span class="material-card__name">${material.name}</span>
+                    <span class="material-card__details">${material.quantity}un. x R$ ${material.price.toFixed(2)}</span>
                 </div>
-                <div class="yarn-cost">R$ ${material.cost.toFixed(2)}</div>
-                <button class="yarn-delete" data-material-id="${material.id}"><i data-feather="trash-2"></i></button>
+                <div class="material-card__actions">
+                    <span class="material-card__price">R$ ${material.cost.toFixed(2)}</span>
+                    <button class="btn-delete-yarn material-delete" data-material-id="${material.id}" title="Remover material"><i data-feather="trash-2"></i></button>
+                </div>
             </div>
         `).join('');
+    }
+    if (subtotalDisplay) subtotalDisplay.textContent = `R$ ${subtotal.toFixed(2)}`;
     feather.replace();
 }
+
 export function renderYarns() {
-    elements.yarnsContainer.innerHTML = state.yarns.length === 0
-        ? '<p style="color: var(--text-light); text-align: center;">Nenhum fio adicionado</p>'
-        : state.yarns.map(yarn => `
-            <div class="yarn-item">
-                <div class="yarn-info">
-                    <div class="yarn-name">${yarn.name} (R$ ${yarn.pricePerGram.toFixed(4)}/g)</div>
-                    <div class="yarn-details">
-                        <label for="yarn-weight-${yarn.id}">Peso Usado (g):</label>
-                        <input type="number" min="0" class="input-small" id="yarn-weight-${yarn.id}" value="${yarn.usedWeight || ''}" data-yarn-id="${yarn.id}">
-                    </div>
+    const container = elements.yarnsContainer;
+    if (!state.yarns || state.yarns.length === 0) {
+        container.innerHTML = `<div class="empty-state" style="text-align: center; padding: 40px; color: #aaa;"><i data-feather="package" style="width: 48px; height: 48px; margin-bottom: 10px; opacity: 0.5;"></i><p>Nenhum fio adicionado ainda.</p></div>`;
+        feather.replace();
+        return;
+    }
+    container.innerHTML = state.yarns.map(yarn => {
+        const initialW = parseFloat(yarn.initialWeight) || 0;
+        const usedW = parseFloat(yarn.usedWeight) || 0;
+        const costVal = parseFloat(yarn.cost) || 0;
+        const finalW = parseFloat(yarn.finalWeight) || 0;
+        return `
+        <div class="yarn-card">
+            <div class="yarn-card__header">
+                <div class="yarn-card__title-group">
+                    <span class="yarn-card__name">${yarn.name}</span>
+                    <span class="yarn-badge">Inicial: ${initialW}g</span>
                 </div>
-                <div class="yarn-cost">R$ ${yarn.cost.toFixed(2)}</div>
-                <button class="yarn-delete" data-yarn-id="${yarn.id}"><i data-feather="trash-2"></i></button>
+                <button class="btn-delete-yarn yarn-delete" data-yarn-id="${yarn.id}" title="Remover este fio"><i data-feather="trash-2"></i></button>
             </div>
-        `).join('');
+            <div class="yarn-card__body">
+                <div class="yarn-input-wrapper">
+                    <label for="yarn-weight-${yarn.id}">Quanto sobrou? (g)</label>
+                    <input type="number" id="yarn-weight-${yarn.id}" data-yarn-id="${yarn.id}" value="${finalW > 0 ? finalW : ''}" placeholder="0" min="0" max="${initialW}" step="0.1">
+                </div>
+                <div class="yarn-info-block"><span class="label">Peso Usado</span><span class="value">${usedW.toFixed(1)}g</span></div>
+                <div class="yarn-info-block"><span class="label">Custo</span><span class="value highlight">R$ ${costVal.toFixed(2)}</span></div>
+            </div>
+        </div>`;
+    }).join('');
     feather.replace();
 }
 
@@ -281,7 +239,6 @@ export function renderHistory(searchTerm = '') {
             default: return new Date(b.date) - new Date(a.date);
         }
     });
-
     elements.historyContainer.innerHTML = sorted.length === 0
         ? `<div class="empty-state"><p>📭 Nenhuma peça no histórico.</p></div>`
         : sorted.map(item => `
@@ -292,213 +249,152 @@ export function renderHistory(searchTerm = '') {
                 <p class="history-item__date">Salvo em: ${new Date(item.date).toLocaleDateString('pt-BR')}</p>
             </div>
             <div class="history-item__details">
-                <div class="history-item__price">
-                    <span>Preço Final</span>
-                    <strong>R$ ${item.finalPrice.toFixed(2)}</strong>
-                </div>
+                <div class="history-item__price"><span>Preço Final</span><strong>R$ ${item.finalPrice.toFixed(2)}</strong></div>
                 <div class="history-item__actions">
-                    <button class="btn btn--icon" data-action="load" title="Carregar dados desta peça">
-                        <i data-feather="upload-cloud"></i> <span>Carregar</span>
-                    </button>
-                    <button class="btn btn--icon" data-action="pdf" title="Gerar PDF da precificação">
-                        <i data-feather="file-text"></i> <span>PDF</span>
-                    </button>
-                    <button class="btn btn--icon btn--icon-danger" data-action="delete" title="Excluir esta peça">
-                        <i data-feather="trash-2"></i> <span>Excluir</span>
-                    </button>
+                    <button class="btn btn--icon" data-action="load" title="Carregar"><i data-feather="upload-cloud"></i></button>
+                    <button class="btn btn--icon" data-action="pdf" title="PDF"><i data-feather="file-text"></i></button>
+                    <button class="btn btn--icon btn--icon-danger" data-action="delete" title="Excluir"><i data-feather="trash-2"></i></button>
                 </div>
             </div>
-        </div>
-        `).join('');
+        </div>`).join('');
+    feather.replace();
 }
 
-/**
- * Renderiza a lista de materiais dentro do modal de criação de receita.
- */
-function renderRecipeMaterials() {
+export function renderRecipeMaterials() {
     const container = document.getElementById('recipe-materials-list');
     if (!container) return;
+    const yarnsHtml = state.newRecipeDraft.yarns.map((y, i) => 
+        `<div class="recipe-mini-card"><div class="mini-card-icon"><i data-feather="disc"></i></div><div class="mini-card-info"><span class="name">${y.name}</span></div><button class="btn-mini-delete" onclick="window.deleteRecipeItem('yarn', ${i})"><i data-feather="x"></i></button></div>`
+    ).join('');
+    const materialsHtml = state.newRecipeDraft.otherMaterials.map((m, i) => 
+        `<div class="recipe-mini-card"><div class="mini-card-icon"><i data-feather="scissors"></i></div><div class="mini-card-info"><span class="name">${m.name}</span><span class="details">${m.quantity}un. (R$ ${m.price.toFixed(2)})</span></div><button class="btn-mini-delete" onclick="window.deleteRecipeItem('material', ${i})"><i data-feather="x"></i></button></div>`
+    ).join('');
 
-    const yarnsHtml = state.newRecipeDraft.yarns.map(y => `<div>- Fio: ${y.name}</div>`).join('');
-    const materialsHtml = state.newRecipeDraft.otherMaterials.map(m => `<div>- Aviamento: ${m.name}</div>`).join('');
-
-    if (yarnsHtml || materialsHtml) {
-        container.innerHTML = `
-            <h4>Materiais da Receita:</h4>
-            ${yarnsHtml}
-            ${materialsHtml}
-            <hr class="divider">
-        `;
-    } else {
-        container.innerHTML = '<p>Nenhum material adicionado a esta receita ainda.</p>';
-    }
+    container.innerHTML = (yarnsHtml || materialsHtml) 
+        ? `<h5 class="recipe-section-title">Fios</h5>${yarnsHtml}<h5 class="recipe-section-title">Aviamentos</h5>${materialsHtml}` 
+        : '<p style="text-align:center;color:#aaa;">Nenhum material adicionado.</p>';
+    feather.replace();
 }
 
-/**
- * Atualiza ou cria o gráfico de pizza de distribuição de custos.
- * @param {number} yarnCost Custo total dos fios.
- * @param {number} materialsCost Custo total de outros materiais.
- * @param {number} laborCost Custo total da mão de obra.
- * @param {number} reworkCost Custo total do retrabalho.
- */
+window.deleteRecipeItem = function(type, index) {
+    if (type === 'yarn') state.newRecipeDraft.yarns.splice(index, 1);
+    else state.newRecipeDraft.otherMaterials.splice(index, 1);
+    renderRecipeMaterials();
+};
+
 export function updateCostChart(yarnCost, materialsCost, laborCost, reworkCost) {
     const ctx = elements.costChartCanvas;
     if (!ctx) return;
 
-    // Destrói o gráfico anterior para evitar sobreposição e problemas de memória
+    // Define os dados
+    const newData = [yarnCost, materialsCost, laborCost, reworkCost];
+
+    // Se o gráfico já existe, precisamos destruí-lo se quisermos mudar o TIPO ou OPÇÕES drasticamente.
+    // Para garantir que o novo design (Doughnut) entre em vigor, vamos destruir o anterior se não for do tipo 'doughnut'.
     if (state.costChartInstance) {
-        state.costChartInstance.destroy();
+        // Se já for doughnut, apenas atualiza os dados para animação suave
+        if (state.costChartInstance.config.type === 'doughnut') {
+            state.costChartInstance.data.datasets[0].data = newData;
+            state.costChartInstance.update();
+            return;
+        } else {
+            // Se for o antigo (pie), destrói para recriar com o novo visual
+            state.costChartInstance.destroy();
+        }
     }
 
-    const data = {
-        labels: ['Fios', 'Outros Materiais', 'Mão de Obra', 'Retrabalho'],
-        datasets: [{
-            label: 'Distribuição de Custos',
-            data: [yarnCost, materialsCost, laborCost, reworkCost],
-            backgroundColor: [
-                '#FFC857', // Amarelo para Fios
-                '#E9724C', // Laranja para Materiais
-                '#C5283D', // Vermelho para Mão de Obra
-                '#481D24'  // Vinho escuro para Retrabalho
-            ],
-            borderColor: '#FFFFFF',
-            borderWidth: 2
-        }]
-    };
-
+    // Cria o Novo Gráfico Moderno
     state.costChartInstance = new Chart(ctx, {
-        type: 'pie',
-        data: data,
+        type: 'doughnut', // Mudamos para Rosca
+        data: {
+            labels: ['Fios', 'Outros Materiais', 'Mão de Obra', 'Retrabalho'],
+            datasets: [{
+                data: newData,
+                // Novas cores harmonizadas com o tema Roxo/Rosa
+                backgroundColor: [
+                    '#FFC857', // Fios (Amarelo Ouro - Mantido para contraste)
+                    '#4BC0C0', // Materiais (Turquesa Suave)
+                    '#F953C6', // Mão de Obra (Rosa Vibrante - Cor da Marca)
+                    '#FF6384'  // Retrabalho (Vermelho Suave - Alerta)
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                hoverOffset: 15, // Aumenta o destaque ao passar o mouse
+                borderRadius: 20, // Borda arredondada nas pontas (Efeito Moderno)
+                spacing: 5 // Espaço entre as fatias
+            }]
+        },
         options: {
             responsive: true,
+            maintainAspectRatio: false, // Permite ajustar melhor ao container
+            cutout: '75%', // Deixa a rosca mais fina e elegante
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            },
+            layout: {
+                padding: 20
+            },
             plugins: {
                 legend: {
-                    position: 'top',
+                    position: 'bottom', // Legenda em baixo fica mais organizado
+                    labels: {
+                        usePointStyle: true, // Usa bolinhas em vez de quadrados
+                        padding: 20,
+                        font: {
+                            family: "'Poppins', sans-serif",
+                            size: 12
+                        },
+                        color: '#4A235A' // Cor do texto escura (tema)
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(74, 35, 90, 0.9)', // Fundo Roxo Escuro
+                    titleFont: { family: "'Poppins', sans-serif", size: 13 },
+                    bodyFont: { family: "'IBM Plex Mono', monospace", size: 13 },
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: true,
+                    callbacks: {
+                        // Formata o valor para Dinheiro (R$) no tooltip
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed !== null) {
+                                label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
+                            }
+                            return label;
+                        }
+                    }
                 }
             }
         }
     });
+}
+export function showMainApp() {
+    if (elements.heroPage && elements.mainApp) {
+        elements.heroPage.classList.add('is-hidden');
+        elements.mainApp.classList.remove('is-hidden');
+    }
 }
 
 export function renderRecipes() {
     if (!elements.recipesGrid) return;
     elements.recipesGrid.innerHTML = state.recipes.length === 0
         ? `<div class="empty-state"><p>Nenhuma receita salva ainda.</p></div>`
-        : state.recipes.map(recipe => {
-            const finalPrice = recipe.finalPrice || 0;
-            return `
-                <div class="history-item" data-id="${recipe.id}">
-                    <div class="history-item__main">
-                        <div class="history-item__info">
-                            <h4 class="history-item__name">${recipe.name}</h4>
-                            <p class="history-item__type">${recipe.description || 'Sem descrição.'}</p>
-                        </div>
-                        <div class="history-item__price">
-                            <span>Preço Salvo</span>
-                            <strong>R$ ${finalPrice.toFixed(2)}</strong>
-                        </div>
-                    </div>
-                    <div class="history-item__actions">
-                        <button class="btn btn--secondary btn--small" data-action="load-materials">Usar esta Receita</button>
-                    </div>
+        : state.recipes.map(recipe => `
+            <div class="history-item">
+                <div class="history-item__main">
+                    <div class="history-item__info"><h4 class="history-item__name">${recipe.name}</h4><p class="history-item__type">${recipe.description || 'Sem descrição.'}</p></div>
+                    <div class="history-item__price"><span>Preço</span><strong>R$ ${(recipe.finalPrice||0).toFixed(2)}</strong></div>
                 </div>
-            `;
-        }).join('');
+                <div class="history-item__actions"><button class="btn btn--secondary btn--small" onclick="window.loadRecipeMaterials('${recipe.id}')">Usar Receita</button></div>
+            </div>`).join('');
 }
+window.loadRecipeMaterials = (id) => loadRecipeMaterials(id);
 
-function handleNavClick(event) {
-    const tab = event.currentTarget.dataset.tab;
-    switchTab(tab);
-}
-
-export function setupNavEventListeners() {
-    elements.navButtons.forEach(btn => btn.addEventListener('click', handleNavClick));
-    if (elements.menuToggle) elements.menuToggle.addEventListener('click', () => elements.mainNav.classList.toggle('open'));
-}
-
-export function setupModalEventListeners() {
-    // Listener para fechar modais com a tecla ESC
-    document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape") {
-            const activeModal = document.querySelector('.modal.active');
-            if (activeModal) {
-                activeModal.classList.remove('active');
-            }
-        }
-    });
-
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', e => {
-            if (e.target === modal || e.target.closest('.modal__close') || e.target.closest('.btn-secondary[id^="cancel"]')) {
-                modal.classList.remove('active');
-            }
-        });
-        // Adiciona listener para a tecla ESC
-    });
-    if (elements.addYarnBtn) elements.addYarnBtn.addEventListener('click', openYarnModal);
-
-    // Listeners para a calculadora de preço por grama (cálculo automático)
-    if (elements.yarnHelperPriceInput) {
-        elements.yarnHelperPriceInput.addEventListener('input', calculatePricePerGramHelper);
-    }
-    if (elements.yarnHelperWeightInput) {
-        elements.yarnHelperWeightInput.addEventListener('input', calculatePricePerGramHelper);
-    }
-
-    // Listeners para o modal de materiais
-    if (elements.addMaterialBtn) {
-        elements.addMaterialBtn.addEventListener('click', openMaterialModal);
-    }
-    const confirmMaterialBtn = document.getElementById('confirmMaterialBtn');
-    if (confirmMaterialBtn) {
-        confirmMaterialBtn.addEventListener('click', addMaterial);
-    }
-
-    // Listeners para o modal de receitas
-    if (elements.addRecipeBtn) {
-        elements.addRecipeBtn.addEventListener('click', openRecipeModal);
-    }
-    const confirmRecipeBtn = document.getElementById('confirmRecipeBtn');
-    if (confirmRecipeBtn) {
-        confirmRecipeBtn.addEventListener('click', saveRecipe);
-    }
-    // Listeners para adicionar materiais DENTRO do modal de receita
-    const addYarnToRecipeBtn = document.getElementById('addYarnToRecipeBtn');
-    if (addYarnToRecipeBtn) {
-        addYarnToRecipeBtn.addEventListener('click', () => {
-            openYarnModal(true); // Abre o modal de fio em modo "receita"
-        });
-    }
-    const addMaterialToRecipeBtn = document.getElementById('addMaterialToRecipeBtn');
-    if (addMaterialToRecipeBtn) {
-        addMaterialToRecipeBtn.addEventListener('click', () => {
-            openMaterialModal(true); // Abre o modal de material em modo "receita"
-        });
-    }
-
-
-    // Listeners para o modal de cálculo de salário
-    if (elements.openSalaryHelperBtn) {
-        elements.openSalaryHelperBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openSalaryHelperModal();
-        });
-    }
-    const salaryInputs = [elements.desiredSalaryInput, elements.hoursPerDayInput, elements.daysPerWeekInput];
-    salaryInputs.forEach(input => {
-        if (input) input.addEventListener('input', calculateSalaryHelper);
-    });
-    if (elements.applySalaryBtn) elements.applySalaryBtn.addEventListener('click', () => {
-        if (state.calculatedHourlyRate) {
-            saveBaseSalary(state.calculatedHourlyRate);
-            elements.salaryHelperModal.classList.remove('active');
-        }
-    });
-}
-
-/**
- * Configura a lógica de navegação para o formulário de múltiplos passos (wizard).
- */
 function setupMultiStepForm() {
     const steps = document.querySelectorAll('.form-step');
     const wizardSteps = document.querySelectorAll('.wizard-steps__item');
@@ -509,36 +405,25 @@ function setupMultiStepForm() {
 
     function updateStepView(previousStep) {
         const isAdvancing = previousStep < currentStep;
-
-        // Apenas executa a lógica de animação se houver uma mudança de passo real
-        if (previousStep !== currentStep) {
-            // Animação de saída do passo antigo
-            if (steps[previousStep]) {
-                const outClass = isAdvancing ? 'slide-out-left' : 'slide-out-right';
-                steps[previousStep].classList.add(outClass);
-                steps[previousStep].addEventListener('animationend', () => {
-                    steps[previousStep].classList.remove('active-step', outClass);
-                }, { once: true });
-            }
+        if (previousStep !== currentStep && steps[previousStep]) {
+            const outClass = isAdvancing ? 'slide-out-left' : 'slide-out-right';
+            steps[previousStep].classList.add(outClass);
+            steps[previousStep].addEventListener('animationend', () => {
+                steps[previousStep].classList.remove('active-step', outClass);
+            }, { once: true });
         }
-        // Animação de entrada do novo passo
         const inClass = isAdvancing ? 'slide-in-right' : 'slide-in-left';
         steps[currentStep].classList.add('active-step', inClass);
         steps[currentStep].addEventListener('animationend', () => {
             steps[currentStep].classList.remove(inClass);
         }, { once: true });
 
-        // Atualiza os indicadores visuais do wizard
         wizardSteps.forEach((step, index) => {
             step.classList.remove('wizard-steps__item--active', 'wizard-steps__item--completed');
-            if (index < currentStep) {
-                step.classList.add('wizard-steps__item--completed');
-            } else if (index === currentStep) {
-                step.classList.add('wizard-steps__item--active');
-            }
+            if (index < currentStep) step.classList.add('wizard-steps__item--completed');
+            else if (index === currentStep) step.classList.add('wizard-steps__item--active');
         });
 
-        // Controla a visibilidade dos botões de navegação
         if (prevBtn) prevBtn.style.display = currentStep > 0 ? 'inline-block' : 'none';
         if (nextBtn) nextBtn.style.display = currentStep < steps.length - 1 ? 'inline-block' : 'none';
         if (calculateBtn) calculateBtn.style.display = currentStep === steps.length - 1 ? 'inline-block' : 'none';
@@ -560,94 +445,175 @@ function setupMultiStepForm() {
         }
     });
 
-    // Inicializa a visualização sem causar animações de saída
-    if (steps.length > 0) {
-        updateStepView(currentStep);
-    }
+    if (steps.length > 0) updateStepView(currentStep);
 }
 
-export function setupFormEventListeners() {
-    // Delegação de eventos para os itens de fio
-    if (elements.yarnsContainer) elements.yarnsContainer.addEventListener('change', e => {
-        if (e.target.matches('input[data-yarn-id]')) {
-            updateYarnWeight(Number(e.target.dataset.yarnId), parseFloat(e.target.value));
-        }
-    });
-    if (elements.yarnsContainer) elements.yarnsContainer.addEventListener('click', e => {
-        const deleteBtn = e.target.closest('.yarn-delete');
-        if (deleteBtn) {
-            deleteYarn(Number(deleteBtn.dataset.yarnId));
+// ADICIONADO: Função que estava faltando
+function handleNavClick(event) {
+    const tab = event.currentTarget.dataset.tab;
+    switchTab(tab);
+}
+
+export function setupNavEventListeners() {
+    elements.navButtons.forEach(btn => btn.addEventListener('click', handleNavClick));
+    if (elements.menuToggle) elements.menuToggle.addEventListener('click', () => elements.mainNav.classList.toggle('open'));
+}
+
+export function setupModalEventListeners() {
+    // 1. Listener Genérico para fechar modais (ESC ou Clicar fora)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            const activeModal = document.querySelector('.modal.active');
+            if (activeModal) activeModal.classList.remove('active');
         }
     });
 
-    // Delegação de eventos para os itens de material
-    if (elements.materialsContainer) elements.materialsContainer.addEventListener('click', e => {
-        const deleteBtn = e.target.closest('.yarn-delete[data-material-id]');
-        if (deleteBtn) {
-            deleteMaterial(Number(deleteBtn.dataset.materialId));
-        }
-    });
-    
-    // Delegação de eventos para o histórico
-    if (elements.historyContainer) elements.historyContainer.addEventListener('click', e => {
-        const target = e.target;
-        if(target.closest('[data-action="load"]')) loadPieceFromHistory(target.closest('.history-item').dataset.id);
-        if(target.closest('[data-action="delete"]')) deleteHistoryItem(target.closest('.history-item').dataset.id);
-        if(target.closest('[data-action="pdf"]')) generatePDF(target.closest('.history-item').dataset.id);
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', e => {
+            if (e.target === modal || e.target.closest('.modal__close') || e.target.closest('button[id^="cancel"]') || e.target.classList.contains('modal-close-btn')) {
+                modal.classList.remove('active');
+            }
+        });
     });
 
-    // Listeners para filtros e ordenação do histórico
-    if (elements.historySearchInput) {
-        elements.historySearchInput.addEventListener('input', (e) => renderHistory(e.target.value));
-    }
-    if (elements.historySortSelect) {
-        elements.historySortSelect.addEventListener('change', (e) => {
-            state.historySortOrder = e.target.value;
-            renderHistory(elements.historySearchInput.value);
+    // 2. Botões Principais (Fio e Material)
+    if (elements.addYarnBtn) elements.addYarnBtn.addEventListener('click', () => openYarnModal(false));
+    if (elements.addMaterialBtn) elements.addMaterialBtn.addEventListener('click', () => openMaterialModal(false));
+
+    // 3. Lógica do Custo de Desperdício
+    const addWasteCostBtn = document.getElementById('addWasteCostBtn');
+    const wasteModal = document.getElementById('wasteModal');
+    const wasteInput = document.getElementById('wasteCostInput');
+    const confirmWasteBtn = document.getElementById('confirmWasteBtn');
+
+    if (addWasteCostBtn && wasteModal) {
+        addWasteCostBtn.addEventListener('click', () => {
+            wasteInput.value = state.wasteCost > 0 ? state.wasteCost.toFixed(2) : '';
+            openModal(wasteModal);
+            setTimeout(() => wasteInput.focus(), 100);
         });
     }
 
-    // Delegação de eventos para as receitas
-    if (elements.recipesGrid) elements.recipesGrid.addEventListener('click', e => {
-        const target = e.target;
-        if(target.closest('[data-action="load-materials"]')) loadRecipeMaterials(target.closest('.history-item').dataset.id);
-    });
+    if (confirmWasteBtn) {
+        confirmWasteBtn.addEventListener('click', () => {
+            const amount = parseFloat(wasteInput.value);
+            if (!isNaN(amount) && amount >= 0) {
+                updateWasteCost(amount); 
+                wasteModal.classList.remove('active');
+            } else {
+                showToast('Por favor, insira um valor válido.', 'error');
+            }
+        });
+    }
 
-    // Listeners para salvar o estado do formulário
-    if (elements.pieceName) elements.pieceName.addEventListener('input', saveFormState);
-    if (elements.pieceType) elements.pieceType.addEventListener('change', saveFormState);
-    if (elements.profitMarginInput) elements.profitMarginInput.addEventListener('change', () => { updateCalculations(); saveFormState(); });
-    if (elements.indirectCostsInput) elements.indirectCostsInput.addEventListener('change', () => { updateCalculations(); saveFormState(); });
-    if (elements.otherMaterialsCostInput) elements.otherMaterialsCostInput.addEventListener('change', e => {
-        state.otherMaterialsCost = parseFloat(e.target.value) || 0;
-        updateCalculations();
+    // --- NOVA LÓGICA: EDITAR TEMPO TOTAL ---
+    const editTimeBtn = document.getElementById('editTimeBtn');
+    const editTimeModal = document.getElementById('editTimeModal');
+    const confirmEditTimeBtn = document.getElementById('confirmEditTimeBtn');
+
+    if (editTimeBtn && editTimeModal) {
+        editTimeBtn.addEventListener('click', () => {
+            // 1. Calcula o tempo total atual em segundos
+            const totalSeconds = state.timer.accumulatedSeconds + state.timer.currentSessionSeconds;
+            
+            // 2. Converte para horas e minutos para preencher os inputs
+            const currentHours = Math.floor(totalSeconds / 3600);
+            const currentMinutes = Math.floor((totalSeconds % 3600) / 60);
+
+            // 3. Preenche os campos (usando os elementos definidos no state.js ou buscando aqui)
+            if(elements.editTimeHoursInput) elements.editTimeHoursInput.value = currentHours;
+            if(elements.editTimeMinutesInput) elements.editTimeMinutesInput.value = currentMinutes;
+
+            openModal(editTimeModal);
+        });
+    }
+
+    if (confirmEditTimeBtn) {
+        confirmEditTimeBtn.addEventListener('click', () => {
+            const h = parseInt(elements.editTimeHoursInput.value) || 0;
+            const m = parseInt(elements.editTimeMinutesInput.value) || 0;
+
+            // Converte o novo tempo desejado para segundos totais
+            const newTotalSeconds = (h * 3600) + (m * 60);
+
+            // Ajusta o acumulado para que o visual (Acumulado + Sessão) bata com o digitado
+            state.timer.accumulatedSeconds = newTotalSeconds - state.timer.currentSessionSeconds;
+            
+            // Segurança para não ficar negativo
+            if (state.timer.accumulatedSeconds < 0) state.timer.accumulatedSeconds = 0;
+
+            updateCalculations();
+            editTimeModal.classList.remove('active');
+            showToast('Tempo total corrigido!', 'success');
+        });
+    }
+    // ----------------------------------------
+
+    // 4. Receitas
+    if (elements.addRecipeBtn) elements.addRecipeBtn.addEventListener('click', openRecipeModal);
+    
+    const confirmRecipeBtn = document.getElementById('confirmRecipeBtn');
+    if (confirmRecipeBtn) confirmRecipeBtn.addEventListener('click', saveRecipe);
+
+    // 5. Salvar Peça / PDF / CSV
+    if (elements.savePieceBtn) elements.savePieceBtn.addEventListener('click', savePiece);
+
+    const saveAsPdfBtn = document.getElementById('saveAsPdfBtn');
+    if (saveAsPdfBtn) saveAsPdfBtn.addEventListener('click', generateCurrentPiecePDF);
+    
+    const saveAsCsvBtn = document.getElementById('saveAsCsvBtn');
+    if (saveAsCsvBtn) saveAsCsvBtn.addEventListener('click', generateCurrentPieceCSV);
+
+    // 6. Calculadoras Auxiliares
+    if (elements.yarnHelperPriceInput) elements.yarnHelperPriceInput.addEventListener('input', calculatePricePerGramHelper);
+    if (elements.yarnHelperWeightInput) elements.yarnHelperWeightInput.addEventListener('input', calculatePricePerGramHelper);
+
+    // 7. Adicionar dentro da Receita
+    const addYarnToRecipeBtn = document.getElementById('addYarnToRecipeBtn');
+    if (addYarnToRecipeBtn) addYarnToRecipeBtn.addEventListener('click', () => openYarnModal(true));
+    
+    const addMaterialToRecipeBtn = document.getElementById('addMaterialToRecipeBtn');
+    if (addMaterialToRecipeBtn) addMaterialToRecipeBtn.addEventListener('click', () => openMaterialModal(true));
+
+   // 8. Salário
+    if (elements.openSalaryHelperBtn) {
+        elements.openSalaryHelperBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openSalaryHelperModal();
+        });
+    }
+
+    // --- CORREÇÃO: Adiciona os ouvintes para calcular enquanto digita ---
+    if (elements.desiredSalaryInput) elements.desiredSalaryInput.addEventListener('input', calculateSalaryHelper);
+    if (elements.hoursPerDayInput) elements.hoursPerDayInput.addEventListener('input', calculateSalaryHelper);
+    if (elements.daysPerWeekInput) elements.daysPerWeekInput.addEventListener('input', calculateSalaryHelper);
+    // -------------------------------------------------------------------
+
+    if (elements.applySalaryBtn) elements.applySalaryBtn.addEventListener('click', () => {
+        if (state.calculatedHourlyRate) {
+            saveBaseSalary(state.calculatedHourlyRate);
+            elements.salaryHelperModal.classList.remove('active');
+        }
     });
     
-    if (elements.savePieceBtn) elements.savePieceBtn.addEventListener('click', savePiece);
+    // 9. Botões de Confirmação Finais
+    const confirmYarnBtn = document.getElementById('confirmYarnBtn');
+    if (confirmYarnBtn) confirmYarnBtn.addEventListener('click', addYarn);
+
+    const confirmMaterialBtn = document.getElementById('confirmMaterialBtn');
+    if (confirmMaterialBtn) confirmMaterialBtn.addEventListener('click', addMaterial);
 }
 
 export function setupGeneralEventListeners() {    
-    // Inicializa o formulário de múltiplos passos
     setupMultiStepForm();
-
-    // Inicializa os listeners dos botões do cronômetro (Iniciar, Pausar, Resetar, Salvar Sessão)
-    setupTimerEventListeners();
-
-    // Configura atributos de acessibilidade para o timer
     if (elements.circularTimer) {
         elements.circularTimer.setAttribute('role', 'timer');
         elements.circularTimer.setAttribute('aria-live', 'polite');
-        elements.circularTimer.setAttribute('aria-atomic', 'true');
     }
-
-    // Adiciona sombra ao header no scroll
     if (elements.mainContent && elements.appHeader) {
         elements.mainContent.addEventListener('scroll', () => {
-            if (elements.mainContent.scrollTop > 10) {
-                elements.appHeader.classList.add('header-scrolled');
-            } else {
-                elements.appHeader.classList.remove('header-scrolled');
-            }
+            if (elements.mainContent.scrollTop > 10) elements.appHeader.classList.add('header-scrolled');
+            else elements.appHeader.classList.remove('header-scrolled');
         });
     }
 }

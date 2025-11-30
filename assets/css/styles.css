@@ -97,88 +97,42 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     50% { transform: translateY(-12px); }
     100% { transform: translateY(0px); }
 }
-/* --- HERO PAGE --- */
+/* --- HERO PAGE RENOVADA E DINÂMICA --- */
+
 .hero {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    width: 100%;
     text-align: center;
-    color: white;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     position: relative;
     overflow: hidden;
+    color: white;
 }
 
+/* Efeito de fade-out para a transição */
 .hero--fade-out {
     opacity: 0;
     transition: opacity 0.5s ease-out;
 }
 
-.hero__background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    animation: gradient-animation 10s ease infinite;
-    background-size: 200% 200%;
-    z-index: -1;
-}
-
-@keyframes gradient-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
+/* Bolhas animadas no fundo */
 .hero__blob {
     position: absolute;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
-    filter: blur(40px);
+    filter: blur(50px); /* Aumenta o desfoque para um efeito mais suave */
     animation: float 15s infinite ease-in-out;
-    /* Otimização: Avisa o navegador que a propriedade transform será animada. */
     will-change: transform;
 }
-.hero__blob--1 {
-    width: 400px;
-    height: 400px;
-    top: -150px;
-    left: -150px;
-}
-.hero__blob--2 {
-    width: 300px;
-    height: 300px;
-    bottom: -100px;
-    right: -100px;
-    animation-delay: -5s;
-}
-.hero__blob--3 {
-    width: 250px;
-    height: 250px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation-delay: -10s;
-    animation-duration: 20s;
-}
-.hero__blob--4 {
-    width: 200px;
-    height: 200px;
-    top: 10%;
-    right: 15%;
-    animation-delay: -2s;
-    animation-duration: 18s;
-}
-.hero__blob--5 {
-    width: 150px;
-    height: 150px;
-    bottom: 20%;
-    left: 10%;
-    animation-delay: -7s;
-    animation-duration: 22s;
-}
+.hero__blob--1 { width: 400px; height: 400px; top: -150px; left: -150px; }
+.hero__blob--2 { width: 300px; height: 300px; bottom: -100px; right: -100px; animation-delay: -5s; }
+.hero__blob--3 { width: 250px; height: 250px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -10s; animation-duration: 20s; }
+.hero__blob--4 { width: 200px; height: 200px; top: 10%; right: 15%; animation-delay: -2s; animation-duration: 18s; }
+.hero__blob--5 { width: 150px; height: 150px; bottom: 20%; left: 10%; animation-delay: -7s; animation-duration: 22s; }
 
 .timer-controls {
     display: flex;
@@ -189,52 +143,36 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 .hero__content {
     max-width: 700px;
     padding: 20px;
+    position: relative; /* Garante que o conteúdo fique acima das bolhas */
+    z-index: 2;
 }
 
+/* Título */
 .hero__title {
-    font-size: clamp(3rem, 10vw, 5rem); /* Tamanho de fonte responsivo */
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 5rem); /* Responsivo */
+    line-height: 1.1;
     font-weight: 700;
-    /* Sombra sutil para destacar o título completo */
-    text-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    margin-bottom: 10px;
+    color: #ffffff;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    margin-bottom: 15px;
 }
 
 .hero__title--accent {
-    color: var(--secondary);
+    color: #FFD1FF;
+    font-style: italic;
+    text-shadow: 0 0 20px rgba(255, 209, 255, 0.7); /* Efeito de brilho neon */
 }
 
-.hero__subtitle {
-    font-size: 1.5rem;
-    opacity: 0.9;
-    margin: 0 auto 40px;
-    /* Limita a largura de leitura para melhor equilíbrio */
-    max-width: 480px;
-}
-
+/* Ilustração (Raposa) */
 .hero__illustration {
-    margin: 30px auto 40px; /* Aumenta a margem para a raposa "respirar" */
-    width: 230px; /* Diminui levemente o tamanho da ilustração */
-    position: relative; /* Necessário para o efeito de bloom */
-    /* A animação de entrada 'slide-in' é combinada com a nova animação 'hero-float' */
-    animation: slide-in 0.8s 0.2s ease-out forwards, hero-float 7s infinite ease-in-out 1s;
-    opacity: 0; /* Necessário para a animação de entrada */
-    transition: transform 0.4s ease; /* Transição suave para o efeito de hover */
-    /* Otimização: Avisa o navegador que as propriedades transform e opacity serão animadas. */
-    will-change: transform, opacity;
+    margin: 20px auto 30px;
+    width: 250px;
+    animation: hero-float 7s ease-in-out infinite 1s; /* Animação de flutuação */
+    position: relative;
 }
 
-.hero__illustration:hover {
-    transform: scale(1.05) rotateZ(-3deg); /* Efeito de inclinação e zoom no hover */
-}
-
-.hero__logo {
-    max-width: 100%; /* Garante que a logo se ajuste ao contêiner */
-    height: auto;    /* Mantém a proporção da imagem */
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); /* Sombra mais pronunciada */
-    transition: filter 0.4s ease; /* Transição suave para a sombra */
-}
-
-/* Efeito de "bloom" circular atrás da mascote */
+/* Círculo de luz atrás da raposa */
 .hero__bloom {
     position: absolute;
     top: 50%;
@@ -247,13 +185,34 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     border-radius: 50%;
 }
 
-/* Animações de entrada */
-/* As animações de entrada agora são aplicadas diretamente nos seletores */
-.hero__title { animation: slide-in 0.8s ease-out forwards; }
-.hero__subtitle { animation: slide-in 0.8s 0.4s ease-out forwards; opacity: 0; }
-/* Otimização: Adiciona will-change para a animação de entrada */
-.hero__subtitle, .btn--large { will-change: transform, opacity; }
-.btn--large { animation: slide-in 0.8s 0.6s ease-out forwards; opacity: 0; }
+.hero__logo {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 15px 20px rgba(0,0,0,0.2)); /* Sombra mais pronunciada */
+}
+
+@keyframes hero-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.hero__subtitle {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 auto 40px;
+    line-height: 1.6;
+    max-width: 550px; /* Limita a largura para melhor leitura */
+}
+
+/* Animações de entrada para os elementos */
+.hero__title, .hero__subtitle, #enter-app-btn, .hero__illustration {
+    opacity: 0;
+    animation: slide-in 0.8s ease-out forwards;
+    will-change: transform, opacity;
+}
+.hero__illustration { animation-delay: 0.2s; }
+.hero__subtitle { animation-delay: 0.4s; }
+#enter-app-btn { animation-delay: 0.6s; }
 
 @keyframes slide-in {
     from {
@@ -266,38 +225,44 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     }
 }
 
-.btn--large {
-    padding: 18px 35px;
+/* Botão Principal com mais destaque */
+#enter-app-btn {
+    background: #ffffff;
+    color: #6E48AA;
+    font-weight: 700;
+    padding: 18px 50px;
+    border-radius: 50px;
     font-size: 1.2rem;
-    border-radius: 14px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    animation: slide-in 0.8s 0.6s ease-out forwards, pulse-btn 2s infinite 1s;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2), 0 0 20px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
 }
 
-@keyframes pulse-btn {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
+#enter-app-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 0 30px rgba(255, 255, 255, 0.3);
+    background-color: #FFD1FF;
 }
 
 /* Layout Principal */
 /* Garante que o container principal use flexbox na direção de coluna */
 #main-app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh; /* Ocupa a altura total da tela */
+    display: flex; /* O app agora é um flex container por padrão */
+    flex-direction: column; /* Mantém a direção em coluna */
+    min-height: 100vh; /* Garante que o app ocupe PELO MENOS a altura da tela, mas pode crescer */
 }
 
 /* Permite que o conteúdo principal cresça e ocupe o espaço restante */
 .main-content {
-    flex-grow: 1;
-    overflow-y: auto; /* Adiciona rolagem se o conteúdo for maior que a tela */
+    padding-bottom: 90px; /* Reduz o espaço no final da página */
+    flex-grow: 1; /* Permite que o conteúdo principal cresça */
+    /* Previne a barra de rolagem horizontal durante as animações de transição de aba */
+    overflow-x: hidden;
+    /* A rolagem agora será gerenciada pelo body, removendo o overflow-y daqui */
 }
 
 .app-header {
@@ -434,25 +399,23 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
 }
 
+/* --- HEADER REDESENHADO --- */
 .app-header {
-    /* Novo gradiente artístico e animado */
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--gradient-start) 100%);
-    color: white;
-    padding: 0 40px;
-    background-size: 250% 250%;
-    /* Adiciona uma transição suave para a sombra */
-    transition: box-shadow 0.3s ease;
-    z-index: 100; /* Garante que o header fique acima do conteúdo */
-    animation: gradient-animation 15s ease infinite;
+    background: #ffffff;
+    padding: 15px 0; /* Padding vertical */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Sombra super suave */
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.app-header__content { 
+.app-header__content {
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
 }
 
 /* Classe que será adicionada via JS quando a página for rolada */
@@ -460,52 +423,103 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     box-shadow: var(--shadow-hover);
 }
 
-.app-header__title--accent {
-    color: var(--secondary);
+/* Logo com Gradiente no Texto */
+.app-header__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, var(--primary-darker) 0%, var(--secondary) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; /* Faz o texto ficar com a cor do gradiente */
+    letter-spacing: -0.5px;
 }
 
+.app-header__title--accent {
+    /* Como o gradiente cobre tudo, essa classe fica redundante, 
+       mas mantemos a estrutura caso queira mudar depois */
+    font-weight: 800;
+}
+
+/* Navegação Central */
 .app-header__nav {
     display: flex;
-    gap: 10px;
+    gap: 5px;
+    background: #f8f9fa; /* Fundo cinza bem claro para o grupo */
+    padding: 5px;
+    border-radius: 12px;
 }
 
 .app-header__nav .nav-btn {
-    margin-bottom: 0;
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.app-header__actions {
+    color: #888;
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 8px;
+    margin: 0; /* Remove margens antigas */
 }
 
-.app-header__actions .form-group input {
-    width: 90px; /* Reduz a largura do campo de salário */
-    text-align: center;
+.nav-btn i {
+    width: 16px;
+    height: 16px;
 }
 
-/* Garante que o label e o input no cabeçalho fiquem organizados */
-.app-header__actions .form-group {
-    font-size: 0.8rem;
-    text-align: center;
+.nav-btn:hover {
+    color: var(--primary);
+    background: rgba(142, 45, 226, 0.05);
+}
+
+.nav-btn--active {
+    background: #ffffff !important;
+    color: var(--primary) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Efeito de elevação */
+    font-weight: 700;
 }
 
 /* Link para abrir a calculadora de salário */
 .salary-calculator-link {
     display: block;
     font-size: 0.75rem;
-    color: white;
-    opacity: 0.8;
+    color: var(--text-light);
     text-decoration: underline;
     margin-top: 5px;
 }
 
-/* Corrige a cor do texto do input de salário no cabeçalho */
-.app-header__actions .form-group input {
-    background-color: var(--surface); /* Fundo branco sólido */
-    color: var(--text-dark); /* Texto roxo escuro */
-    border-color: var(--border-color);
+/* Widget de Salário */
+.app-header__actions .form-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FDF2F8; /* Rosa muito suave */
+    border: 1px solid #FBCFE8;
+    padding: 5px 10px 5px 15px;
+    border-radius: 50px;
+}
+
+.app-header__actions label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--secondary);
+    margin: 0;
+}
+
+.app-header__actions input {
+    width: 70px;
+    height: 32px;
+    border: none;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--primary-darker);
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 /* Estilo específico para o botão de Login no cabeçalho */
@@ -620,19 +634,24 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     font-weight: 500;    transition: color 0.3s ease;
 }
 
+/* Deixar a linha tracejada para parecer costura/fio */
 .wizard-steps__line {
-    flex-grow: 1;
-    height: 2px;
-    background-color: var(--border-color);
+    height: 3px;
+    background-image: linear-gradient(to right, var(--border-color) 50%, transparent 50%);
+    background-size: 10px 100%; /* Tamanho do traço */
+    background-color: transparent;
+    opacity: 0.5;
     margin-top: 20px; /* Alinha com o centro dos círculos */
     transition: background-color 0.3s ease;
+    flex-grow: 1;
 }
 
 /* Estilo do passo ATIVO */
+/* O passo ativo deve brilhar */
 .wizard-steps__item--active .wizard-steps__counter {
     background-color: var(--primary);
     color: white;
-    border-color: var(--primary);    box-shadow: 0 0 15px rgba(142, 45, 226, 0.5); /* Glow mais forte */
+    border-color: var(--primary);    box-shadow: 0 0 15px rgba(142, 45, 226, 0.5); /* Glow mais forte */;
 }
 
 .wizard-steps__item--active,
@@ -640,6 +659,10 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     opacity: 1; /* Garante que os passos ativos e concluídos fiquem 100% visíveis */
 }
 
+.wizard-steps__item--active .wizard-steps__counter {
+    box-shadow: 0 0 0 5px rgba(142, 45, 226, 0.2); /* Anel externo */
+    transform: scale(1.1);
+}
 .wizard-steps__item--active .wizard-steps__title {
     color: var(--primary-darker);
     font-weight: 600;
@@ -657,6 +680,9 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     background-color: var(--primary);
 }
 
+/* Correção visual da ordem dos passos */
+/* Nota: No seu HTML fornecido, a ordem está 1 -> 3 -> 2 -> 4. 
+   Sugiro corrigir a ordem das divs no index.html para ficar lógico. */
 /* Estilos para os novos elementos */
 
 /* 1. Dica no Card de Materiais */
@@ -759,6 +785,12 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     margin-bottom: 0;
 }
 
+.card {
+    background: rgba(255, 255, 255, 0.85); /* Mais transparência */
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 30px rgba(142, 45, 226, 0.08); /* Sombra roxa suave */
+    backdrop-filter: blur(12px);
+}
 /* --- FORMULÁRIO MULTI-STEP --- */
 #calculator-form-steps {
     max-width: 700px; /* Centraliza o conteúdo de cada passo */
@@ -810,17 +842,21 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 /* Wrapper para posicionar o ícone dentro do input */
 .form-group__wrapper {
     position: relative;
+    /* Garante que o wrapper não sobreponha elementos adjacentes */
+    z-index: 1;
 }
 
+/* Ícones dentro dos inputs */
 .form-group__wrapper i {
     position: absolute;
     left: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-light);
+    color: var(--primary); /* Ícone roxo em vez de cinza */
     width: 16px; /* Ajuste fino no ícone */
     height: 18px;
     pointer-events: none; /* Permite clicar através do ícone */
+    opacity: 0.7;
 }
 
 /* Adiciona padding à esquerda nos inputs para não sobrepor o ícone */
@@ -829,7 +865,17 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 }
 
 /* Limita a largura dos inputs para não ficarem esticados */
-.form-group input[type="text"], .form-group input[type="number"] {
+/* Inputs mais elegantes e limpos */
+.form-group input[type="text"], 
+.form-group select {
+    background-color: #ffffff; /* Fundo branco para melhor leitura */
+    border: 2px solid #F2EBF9; /* Borda lilás bem suave */
+    color: var(--text-dark);
+    font-weight: 500;
+    padding: 15px 15px 15px 45px; /* Espaço para o ícone */
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(142, 45, 226, 0.02); /* Sombra quase imperceptível */
+    transition: all 0.3s ease;
     /* A largura máxima agora é controlada pelo contêiner do formulário */
     width: 100%;
 }
@@ -852,6 +898,16 @@ textarea {
     color: var(--input-color);
 }
 
+.form-group select {
+    appearance: none; /* Remove a seta padrão feia do navegador */
+    -webkit-appearance: none;
+    cursor: pointer;
+    /* Adiciona uma seta customizada roxa */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238E2DE2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 18px;
+}
 select {
     /* Adiciona o ícone de seta padrão, mas permite customização */
     appearance: none;
@@ -868,12 +924,15 @@ textarea::placeholder {
     opacity: 0.8;
 }
 
-input[type="number"]:focus,
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-select:focus,
-textarea:focus {
+/* Efeito ao clicar no campo (Foco) */
+.form-group input:focus, 
+.form-group select:focus {
+    background-color: #fff;
+    border-color: var(--primary); /* Roxo vibrante */
+    box-shadow: 0 0 0 4px rgba(142, 45, 226, 0.15); /* Glow suave */
+    transform: translateY(-2px);
+}
+input[type="number"]:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--input-focus-border-color);
     box-shadow: var(--input-focus-shadow);
@@ -1019,79 +1078,197 @@ select:focus {
 }
 @keyframes slideOut {
     from { opacity: 1; transform: translateX(0); }
-    to { opacity: 0; transform: translateX(50px); }
-}
-/* Estilo para a lista de fios */
-.tab-pane {
-    /* Adicionado para conter as abas posicionadas absolutamente e controlar a animação */
-    position: relative;
-    overflow-x: hidden; /* Previne a barra de rolagem horizontal durante a animação */
+    to { opacity: 0; transform: translateX(-50px); } /* Corrigido para deslizar para a esquerda */
 }
 
-.yarn-item,
-.material-item {
+/* --- ESTILOS DO CARD DE FIO --- */
+
+/* Container do Card */
+.yarn-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.yarn-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(142, 45, 226, 0.15);
+    border-color: #dcd0e8;
+}
+
+/* Cabeçalho do Card */
+.yarn-card__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    margin-bottom: 10px;
-    background-color: #fafafa;
-}
-.yarn-info .yarn-name,
-.material-info .material-name {
-    font-weight: 600;
-}
-.yarn-info .yarn-details,
-.material-info .material-details {
-    font-size: 0.85rem;
-    color: var(--text-light);
-}
-.yarn-cost,
-.material-cost {
-    font-weight: 600;
-    font-family: 'IBM Plex Mono', monospace;
-}
-.yarn-delete,
-.material-delete {
-    background: none;
-    border: none;
-    color: #ff4d4d;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-left: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #eee;
 }
 
-/* Estilos para a edição do nome da sessão no histórico */
+.yarn-card__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.yarn-card__name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    text-transform: capitalize;
+}
+
+/* Badge de Peso Inicial */
+.yarn-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    background-color: #f3e8ff;
+    color: var(--primary);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    width: fit-content;
+}
+
+/* Corpo do Card (Grid) */
+.yarn-card__body {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr; /* Input maior | Usado | Custo */
+    gap: 20px;
+    align-items: center;
+}
+
+/* Input de Peso (Sobra) */
+.yarn-input-wrapper {
+    position: relative;
+    text-align: left;
+}
+
+.yarn-input-wrapper label {
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.yarn-input-wrapper input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 2px solid #f0f0f0;
+    border-radius: 10px;
+    background-color: #fafafa;
+    color: var(--text-dark);
+    box-sizing: border-box;
+}
+
+.yarn-input-wrapper input:focus {
+    border-color: var(--primary);
+    background-color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(142, 45, 226, 0.1);
+}
+
+/* Blocos de Informação (Usado e Custo) */
+.yarn-info-block {
+    text-align: center;
+}
+
+.yarn-info-block .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.yarn-info-block .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.yarn-info-block .value.highlight {
+    color: var(--primary);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.2rem;
+}
+
+/* Botão de Deletar Específico do Card */
+.btn-delete-yarn {
+    background: none;
+    border: none;
+    color: #ffcccc; /* Vermelho bem claro */
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-delete-yarn:hover {
+    color: #ff4d4d;
+    background-color: #fff0f0;
+}
+
+/* Responsivo para celular */
+@media (max-width: 600px) {
+    .yarn-card__body {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        text-align: center;
+    }
+    .yarn-input-wrapper { text-align: left; }
+    .yarn-info-block {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f5f5f5;
+        padding-bottom: 10px;
+    }
+}
+
+/* --- MANTENHA ESTES ESTILOS ABAIXO (USADOS NO HISTÓRICO DE TEMPO) --- */
+
+/* Estilos para a edição do nome da sessão no histórico (Timer) */
 .yarn-item .session-name-input {
-    display: none; /* O input de edição fica escondido por padrão */
+    display: none; 
     width: 60%;
 }
 
 .yarn-item .session-edit-actions {
-    display: none; /* Os botões de salvar/cancelar ficam escondidos */
+    display: none; 
     gap: 8px;
 }
 
-/* Quando o item está em modo de edição */
+/* Quando o item de HISTÓRICO está em modo de edição */
 .yarn-item.editing .yarn-name,
 .yarn-item.editing .yarn-details,
 .yarn-item.editing .yarn-cost,
 .yarn-item.editing .yarn-duplicate,
 .yarn-item.editing .yarn-edit,
 .yarn-item.editing .yarn-delete {
-    display: none; /* Esconde o nome original e os botões de ação */
+    display: none; 
 }
 
 .yarn-item.editing .session-name-input {
-    display: inline-block; /* Mostra o input de edição */
+    display: inline-block; 
 }
 
 .yarn-item.editing .session-edit-actions {
-    display: flex; /* Mostra os botões de salvar/cancelar */
+    display: flex; 
 }
-
 .btn--icon-danger {
     color: #FF3B30; /* Vermelho para ações destrutivas */
 }
@@ -1135,6 +1312,27 @@ select:focus {
     /* Otimização: Prepara o modal para animação */
     will-change: transform, opacity;
 }
+
+/* Estilo para o modal de opções de salvamento */
+.modal__content--small {
+    max-width: 400px;
+}
+
+.save-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.save-options .btn {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 
 @keyframes modal-fade-in {
     from {
@@ -1255,22 +1453,42 @@ input[type=number] {
     top: 50px;
 }
 
-/* --- GRÁFICO DE PIZZA NO RESUMO --- */
 .chart-container {
-    position: relative; /* Necessário para o Chart.js gerenciar o tamanho responsivo */
-    margin: 25px auto; /* Adiciona espaçamento vertical e centraliza o gráfico */
-    padding: 0 20px; /* Garante que o gráfico não cole nas bordas do card */
-    max-width: 380px; /* Limita a largura máxima em telas grandes, melhorando a proporção */
-    height: auto; /* A altura se ajustará automaticamente */
+    position: relative;
+    margin: 30px auto; /* Mais margem externa */
+    padding: 0 10px;
+    
+    /* Tamanhos */
+    width: 100%;
+    max-width: 350px; /* Limita a largura */
+    min-height: 350px; /* Garante altura para o gráfico desenhar */
+    
+    /* FLEXBOX CORRIGIDO */
+    display: flex;
+    flex-direction: column; /* O SEGREDO: Empilha Título em cima, Gráfico embaixo */
+    align-items: center;    /* Centraliza horizontalmente */
+    justify-content: center;
 }
 
 .chart-title {
+    width: 100%;
     text-align: center;
     font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 1rem;
-    color: var(--text-dark);
-    margin-bottom: 15px;
+    font-weight: 700; /* Mais negrito para destaque */
+    font-size: 1.1rem;
+    color: var(--primary-darker); /* Roxo escuro do tema */
+    margin-bottom: 20px; /* Espaço entre o título e a rosca */
+    position: relative;
+    z-index: 10;
+}
+
+#costDistributionChart {
+    /* Garante que o gráfico não fique esticado ou pequeno demais */
+    max-height: 300px; 
+    width: 100% !important;
+    height: auto !important;
+    /* Filtro leve para dar profundidade na rosca */
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
 }
 
 .card--summary .card__title {
@@ -1437,8 +1655,8 @@ input[type=number] {
     stroke-width: 10; /* Borda mais espessa */
     stroke-linecap: round;
     /* Novo cálculo para o raio de 95 ( (200/2) - (10/2) ) -> 2 * PI * 95 = 597 */
-    stroke-dasharray: 597;
-    stroke-dashoffset: 597;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
     transition: stroke-dashoffset 1s linear;
     filter: drop-shadow(0 0 5px rgba(142, 45, 226, 0.5)); /* Efeito de "glow" */
 }
@@ -1587,6 +1805,93 @@ input[type=number] {
     font-size: 0.9rem;
 }
 
+.waste-cost-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rework-mode-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.materials-subtotal {
+    text-align: right;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.waste-cost-display {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+/* --- TOOLTIP --- */
+.tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.tooltip__icon {
+    color: var(--text-light);
+    cursor: help;
+    width: 18px;
+    height: 18px;
+}
+
+.tooltip__text {
+    visibility: hidden;
+    width: 250px;
+    background-color: var(--primary-darker);
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 10px;
+    position: absolute;
+    z-index: 10;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -125px; /* Metade da largura para centralizar */
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* Ajustes específicos para tooltips dentro do cabeçalho */
+.app-header .tooltip__icon {
+    color: rgba(255, 255, 255, 0.8); /* Cor branca semitransparente para contraste */
+}
+
+.app-header .tooltip__icon:hover {
+    color: white;
+}
+
+.app-header .tooltip__text {
+    bottom: auto; /* Remove o posicionamento inferior */
+    top: 150%; /* Posiciona o tooltip ABAIXO do ícone */
+}
+
+.tooltip:hover .tooltip__text,
+.tooltip:focus-within .tooltip__text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Container para alinhar label e tooltip */
+.label-with-tooltip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 /* --- ESTILOS DE RESPONSIVIDADE --- */
 
 .menu-toggle { display: none; }
@@ -1666,31 +1971,115 @@ input[type=number] {
     }
 }
 
-/* --- RODAPÉ DE AÇÃO FIXO --- */
+/* --- RODAPÉ FLUTUANTE MODERNO --- */
 .fixed-action-footer {
-    position: fixed; /* Altera para 'fixed' para fixar na tela */
-    bottom: 0;
-    left: 0;
-    width: 100%; /* Garante que ocupe toda a largura */
-    padding: 20px;
-    box-sizing: border-box; /* Garante que o padding não aumente a largura total */
-    background: var(--surface);
-    display: flex;
-    justify-content: space-between; /* Alinha os botões nas extremidades */
+    position: fixed;
+    bottom: 30px; /* Flutua um pouco acima da borda */
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza perfeitamente na tela */
+    
+    width: 90%;
+    max-width: 700px; /* A mesma largura dos cards do formulário */
+    
+    background: rgba(255, 255, 255, 0.95); /* Fundo branco quase sólido */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px; /* Bordas bem arredondadas */
+    box-shadow: 0 10px 30px rgba(142, 45, 226, 0.15); /* Sombra elegante */
+    
+    display: flex; /* Essencial para os botões aparecerem lado a lado */
+    justify-content: space-between; 
     align-items: center;
-    z-index: 500; /* Garante que fique acima do conteúdo, mas abaixo de modais */
-    /* Permite que eventos de clique e rolagem "passem através" das áreas vazias do rodapé */
-    pointer-events: none;
-}
-.fixed-action-footer .btn {
-    padding: 16px 35px; /* Aumenta a altura dos botões */
-    font-size: 1.1rem;
-    min-width: 150px; /* Garante uma largura mínima */
-    text-align: center;
-    /* Faz com que os botões voltem a ser interativos e capturar cliques */
-    pointer-events: auto;
+    padding: 15px 20px;
+    z-index: 1000;
 }
 
+/* Botão VOLTAR */
+#prev-step-btn {
+    background: transparent;
+    color: var(--text-light);
+    font-weight: 600;
+    border: none;
+    padding: 10px 20px;
+    transition: color 0.3s;
+    display: inline-block !important; /* Força a visibilidade se o JS tentar esconder */
+}
+#prev-step-btn:hover {
+    color: var(--primary);
+    background: #f5f0fa;
+    border-radius: 10px;
+}
+
+/* Botão AVANÇAR */
+#next-step-btn, #calculatePriceBtn {
+    background-image: linear-gradient(to right, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    font-weight: 700;
+    padding: 12px 35px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(142, 45, 226, 0.3);
+    border: none;
+    display: inline-block; /* Garante que não suma */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+
+
+#next-step-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(142, 45, 226, 0.4);
+}
+
+
+/* --- BOTÃO SALVAR PEÇA (RODAPÉ DO CARD) --- */
+#savePieceBtn {
+    width: 100%;
+    background: #ffffff; /* Fundo branco para contraste máximo com o degradê */
+    color: var(--primary); /* Texto Roxo */
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 22px; /* Mais alto para ser fácil de clicar no celular */
+    border: none;
+    
+    /* Arredonda apenas embaixo para encaixar no card */
+    border-radius: 0 0 16px 16px; 
+    border-top: 1px solid rgba(142, 45, 226, 0.1); /* Linha sutil separadora */
+    
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Espaço para ícone se houver */
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.02); /* Sombra sutil subindo */
+}
+
+/* Efeito ao passar o mouse */
+#savePieceBtn:hover {
+    background: #fdfaff; /* Um tom quase imperceptível de lilás */
+    color: var(--primary-darker);
+    padding-bottom: 25px; /* Efeito visual de "crescer" levemente */
+    transform: translateY(0); /* Impede que ele suba, mantendo fixo no card */
+}
+
+/* Adicionar um ícone via CSS (opcional, mas fica lindo) */
+#savePieceBtn::before {
+    content: '';
+    /* Ícone de Salvar (Disquete simplificado ou Check) via SVG */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238E2DE2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z'%3E%3C/path%3E%3Cpolyline points='17 21 17 13 7 13 7 21'%3E%3C/polyline%3E%3Cpolyline points='7 3 7 8 15 8'%3E%3C/polyline%3E%3C/svg%3E");
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+#savePieceBtn:hover::before {
+    transform: scale(1.1) rotate(-5deg); /* Animação divertida no ícone */
+}
 
 .fixed-action-footer #calculatePriceBtn {
     width: 100%;
@@ -2019,4 +2408,281 @@ input[type=number] {
         width: 90%;
         max-width: 400px;
     }
+}
+
+/* Classe para conteúdo acessível apenas para leitores de tela */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Classe utilitária para esconder elementos completamente (visual e do fluxo) */
+.is-hidden {
+    display: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* --- CARD DE AVIAMENTOS (MATERIAL CARD) --- */
+.material-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.material-card:hover {
+    transform: translateX(5px); /* Leve movimento para a direita */
+    border-color: var(--primary);
+    box-shadow: 0 4px 15px rgba(142, 45, 226, 0.1);
+}
+
+.material-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.material-card__name {
+    font-weight: 700;
+    color: var(--primary-darker);
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+
+.material-card__details {
+    font-size: 0.85rem;
+    color: #888;
+    background-color: #f9f9f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.material-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.material-card__price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+/* --- ÁREA DE CUSTO DE DESPERDÍCIO --- */
+.waste-cost-container {
+    background-color: #fff0f0; /* Fundo avermelhado bem suave */
+    border: 1px dashed #ffcccc;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-top: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.waste-cost-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.waste-cost-display {
+    margin: 0;
+    font-size: 1rem;
+    color: #c0392b; /* Vermelho escuro */
+}
+
+.waste-cost-display strong {
+    font-size: 1.2rem;
+    margin-left: 5px;
+}
+
+/* --- CARD DE MÃO DE OBRA (LABOR CARD) --- */
+.labor-tool-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.labor-input-row {
+    display: flex;
+    align-items: flex-end; /* Alinha o botão com a base dos inputs */
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px dashed #eee;
+}
+
+.time-input-group {
+    flex: 1;
+}
+
+.time-input-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.time-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.time-wrapper input {
+    width: 100%;
+    padding: 12px 15px;
+    padding-right: 40px; /* Espaço para o sufixo "h" ou "min" */
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+    border: 2px solid #f0f0f0;
+    border-radius: 10px;
+    background-color: #fafafa;
+}
+
+.time-wrapper input:focus {
+    border-color: var(--primary);
+    background-color: #fff;
+    outline: none;
+}
+
+.time-suffix {
+    position: absolute;
+    right: 15px;
+    color: #aaa;
+    font-weight: 600;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.btn-add-time {
+    padding: 12px 25px;
+    height: 50px; /* Mesma altura dos inputs */
+    background-color: #f3e8ff;
+    color: var(--primary);
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-add-time:hover {
+    background-color: #e5d5f2;
+}
+
+/* Estatísticas (Grid de 3 colunas) */
+.labor-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    text-align: center;
+}
+
+.stat-box .label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+.stat-box .value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.stat-box .value.highlight {
+    color: var(--primary);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.4rem;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+    .labor-input-row { flex-direction: column; align-items: stretch; }
+    .labor-stats-grid { grid-template-columns: 1fr; gap: 20px; }
+    .stat-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
+}
+/* Botão de editar pequeno ao lado do texto */
+.btn-icon-small {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-light);
+    padding: 0 5px;
+    vertical-align: middle;
+    transition: color 0.2s;
+}
+
+.btn-icon-small:hover {
+    color: var(--primary);
+    transform: scale(1.1);
+}
+
+.btn-icon-small i {
+    width: 16px;
+    height: 16px;
+}
+
+.time-display-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* --- MELHORIAS NO MODAL PADRÃO --- */
+/* Aumenta o respiro interno e ativa o Flexbox para gerenciar espaços */
+.modal__body {
+    padding: 30px; /* Um pouco mais de espaço que o padrão */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* O SEGREDO: Cria 20px de distância exata entre cada campo */
+}
+
+/* Garante que o label (título) não fique colado na caixinha */
+.modal__body label {
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 600;
+}
+
+/* Ajusta o rodapé para ter mais ar */
+.modal__footer {
+    padding: 20px 30px;
+    margin-top: 10px; /* Separa um pouco mais dos campos */
+    background-color: #fafafa; /* Opcional: cor de fundo sutil no rodapé */
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* Remove margens antigas se existirem, para deixar o 'gap' controlar tudo */
+.modal__body .form-group {
+    margin-bottom: 0 !important;
 }

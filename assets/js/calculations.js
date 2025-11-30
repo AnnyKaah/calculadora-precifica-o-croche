@@ -1,5 +1,6 @@
 import { state, elements } from './state.js';
-import { updateCostChart } from './ui.js';
+import { updateCostChart, showToast } from './ui.js';
+import { saveFormState } from './storage.js';
 
 /**
  * Adiciona uma animação de "flash" a um elemento para indicar que ele foi atualizado.
@@ -66,25 +67,52 @@ export function updateCalculations() {
     const yarnCost = state.yarns.reduce((sum, yarn) => sum + yarn.cost, 0);
     elements.yarnCostDisplay.textContent = `R$ ${yarnCost.toFixed(2)}`;
 
-    // Custo de outros materiais
-    const otherMaterialsCost = state.otherMaterials.reduce((sum, material) => sum + material.cost, 0) + state.wasteCost;
+    // Custo de outros materiais (Soma itens + custo fixo de desperdício)
+    const otherMaterialsCost = state.otherMaterials.reduce((sum, material) => sum + material.cost, 0) + (state.wasteCost || 0);
     elements.materialsCostDisplay.textContent = `R$ ${otherMaterialsCost.toFixed(2)}`;
-    if (document.getElementById('wasteCostDisplay')) {
-        document.getElementById('wasteCostDisplay').textContent = `R$ ${state.wasteCost.toFixed(2)}`;
+    
+    // Atualiza o display específico do desperdício se ele existir na tela
+    const wasteCostDisplay = document.getElementById('wasteCostDisplay');
+    if (wasteCostDisplay) {
+        wasteCostDisplay.textContent = `R$ ${(state.wasteCost || 0).toFixed(2)}`;
     }
 
     // Custo de mão de obra
-    const salaryPerHour = state.customSalary || state.baseSalary;
-    const productiveHours = (state.timer.accumulatedSeconds + state.timer.currentSessionSeconds) / 3600;
+    const salaryPerHour = state.customSalary || state.baseSalary || 0;
+    
+    // Soma tempo acumulado + tempo atual
+    const totalSeconds = state.timer.accumulatedSeconds + state.timer.currentSessionSeconds;
+    const productiveHours = totalSeconds / 3600;
     const reworkHours = state.timer.reworkSeconds / 3600;
+    
     const laborCost = productiveHours * salaryPerHour;
     const reworkCost = reworkHours * salaryPerHour;
 
+    // Atualiza Displays de Mão de Obra
     elements.laborRateDisplay.textContent = `R$ ${salaryPerHour.toFixed(2)}`;
-    elements.laborCostDisplay.textContent = `R$ ${laborCost.toFixed(2)}`;
+    if (elements.laborCostDisplay) elements.laborCostDisplay.textContent = `R$ ${laborCost.toFixed(2)}`;
     elements.laborCostSummary.textContent = `R$ ${laborCost.toFixed(2)}`;
-    if (document.getElementById('reworkCostDisplay')) {
-        document.getElementById('reworkCostDisplay').textContent = `R$ ${reworkCost.toFixed(2)}`;
+    
+    // --- CORREÇÃO AQUI ---
+    // Calcula as horas e minutos para exibição
+    const totalHours = Math.floor(totalSeconds / 3600);
+    const totalMinutes = Math.floor((totalSeconds % 3600) / 60);
+    const timeString = `${totalHours}h ${totalMinutes}m`;
+
+    // Atualiza o display no card de Custo de Mão de Obra (lá embaixo)
+    if (elements.laborTimeDisplay) {
+        elements.laborTimeDisplay.textContent = timeString;
+    }
+
+    // Atualiza o display logo abaixo do Cronômetro (o que estava travado em 0h 0m)
+    if (elements.totalPieceTimeDisplay) {
+        elements.totalPieceTimeDisplay.textContent = timeString;
+    }
+    // ---------------------
+
+    const reworkCostDisplay = document.getElementById('reworkCostDisplay');
+    if (reworkCostDisplay) {
+        reworkCostDisplay.textContent = `R$ ${reworkCost.toFixed(2)}`;
     }
 
     // Custo total
@@ -109,4 +137,16 @@ export function updateCalculations() {
 
     // Atualiza o gráfico de pizza com os novos custos
     updateCostChart(yarnCost, otherMaterialsCost, laborCost, reworkCost);
+
+    // Salva o estado do formulário após cada cálculo
+    saveFormState();
+}
+
+/**
+ * Atualiza o custo de desperdício e recalcula os totais.
+ */
+export function updateWasteCost(amount) {
+    state.wasteCost = amount;
+    updateCalculations();
+    showToast('Custo de desperdício atualizado!', 'success');
 }

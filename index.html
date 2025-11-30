@@ -9,15 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/styles.css">
-    <!-- Biblioteca para gerar PDF -->
-    <!-- Biblioteca de Gráficos (Chart.js) -->
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- Biblioteca de Ícones (Feather Icons) -->
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
-    <!-- Hero Page Section -->
     <div id="hero-page" class="hero">
         <div class="hero__content">
             <h1 class="hero__title">Amigurumi<span class="hero__title--accent">Preço</span></h1>
@@ -37,8 +34,6 @@
         </div>
     </div>
 
-
-    <!-- Main App Container (initially hidden) -->
     <div id="main-app" class="container-top-nav">
         <header class="app-header">
             <div class="app-header__content">
@@ -59,20 +54,17 @@
                 </nav>
                 <div class="app-header__actions">
                     <div class="settings">
-                        <div class="form-group">
-                            <label for="baseSalary">Salário/Hora (R$)</label>
+                        <div class="form-group form-group--header">
+                            <div class="label-with-tooltip">
+                                <label for="baseSalary">Salário/Hora (R$)</label>
+                                <div class="tooltip">
+                                    <i data-feather="help-circle" class="tooltip__icon"></i>
+                                    <span class="tooltip__text">Este é o valor que você cobra pela sua hora de trabalho. Use a calculadora para descobrir um valor sugerido.</span>
+                                </div>
+                            </div>
                             <input type="number" id="baseSalary" placeholder="30.00" step="0.01" value="30.00">
                             <a href="#" id="openSalaryHelper" class="salary-calculator-link">Não sabe o seu? Calcule aqui</a>
                         </div>
-                    </div>
-
-                    <!-- Botão de Login (será escondido após o login) -->
-                    <button id="loginBtn" class="btn btn--outline">Login / Registrar</button>
-
-                    <!-- Área do Usuário Logado (inicialmente escondida) -->
-                    <div id="userInfoContainer" class="user-info" style="display: none;">
-                        <span id="userNameDisplay" class="user-info__name"></span>
-                        <button id="logoutBtn" class="user-info__logout">Sair</button>
                     </div>
 
                     <button id="menu-toggle" class="menu-toggle">
@@ -82,16 +74,13 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Calculator Tab -->
             <section id="calculator-tab" class="tab-pane tab-pane--active">
                 <div class="page-header">
                     <h2>Calculadora de Preços</h2>
                     <p>Insira os detalhes da sua peça para calcular o preço final</p>
                 </div>
 
-                <!-- Wizard de Passos -->
                 <div class="wizard-steps">
                     <div class="wizard-steps__item wizard-steps__item--active" data-step="1">
                         <div class="wizard-steps__counter">1</div>
@@ -115,7 +104,6 @@
                 </div>
 
                 <div id="calculator-form-steps">
-                    <!-- Passo 1: Informações da Peça -->
                     <div class="form-step active-step" data-step-id="1">
                         <div class="card">
                             <h3 class="card__title"><i data-feather="clipboard"></i>Informações da Peça</h3>
@@ -140,7 +128,6 @@
                         </div>
                     </div>
 
-                    <!-- Passo 3: Materiais -->
                     <div class="form-step" data-step-id="3">
                         <div class="card">
                             <h3 class="card__title"><i data-feather="disc"></i>Fios Utilizados</h3>
@@ -151,16 +138,25 @@
                         <div class="card">
                             <h3 class="card__title"><i data-feather="scissors"></i>Aviamentos e Outros Materiais</h3>
                             <div id="materialsContainer"></div>
+                            <div class="materials-subtotal">
+                                <p>Subtotal dos materiais: <strong id="materialsSubtotalDisplay">R$ 0.00</strong></p>
+                            </div>
                             <p class="card__hint">Ex: enchimento, olhos de segurança, botões, zíperes.</p>
                             <button id="addMaterialBtn" class="btn btn--secondary btn--small">+ Adicionar Material</button>
+                            
                             <div class="waste-cost-container">
-                                <button id="addWasteCostBtn" class="btn btn--secondary btn--small">+ Custo de Desperdício</button>
-                                <p>Custo de desperdício: <strong id="wasteCostDisplay">R$ 0.00</strong></p>
+                                <div class="waste-cost-header">
+                                    <button id="addWasteCostBtn" class="btn btn--secondary btn--small">+ Custo de Desperdício</button>
+                                    <div class="tooltip">
+                                        <i data-feather="help-circle" class="tooltip__icon"></i>
+                                        <span class="tooltip__text">Inclua aqui custos de materiais que não são incorporados na peça, mas são consumidos no processo. Ex: cola, fita adesiva, embalagens, etiquetas, etc.</span>
+                                    </div>
+                                </div>
+                                <p class="waste-cost-display">Custo de desperdício: <strong id="wasteCostDisplay">R$ 0.00</strong></p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Passo 2: Tempo de Produção -->
                     <div class="form-step" data-step-id="2">
                         <div class="card">
                             <h3 class="card__title"><i data-feather="clock"></i>Tempo de Produção</h3>
@@ -183,17 +179,24 @@
                                 </button>
                             </div>
                             <div class="circular-timer__actions" style="margin-top: 1rem;">
-                                <button id="reworkModeBtn" class="btn btn--rework">
-                                    <i data-feather="alert-triangle"></i> Modo Retrabalho
-                                </button>
+                                <div class="rework-mode-container">
+                                    <button id="reworkModeBtn" class="btn btn--rework">
+                                        <i data-feather="alert-triangle"></i> Modo Retrabalho
+                                    </button>
+                                    <div class="tooltip">
+                                        <i data-feather="help-circle" class="tooltip__icon"></i>
+                                        <span class="tooltip__text">Use para cronometrar o tempo gasto corrigindo erros. Esse tempo será calculado como um custo separado no resumo final.</span>
+                                    </div>
+                                </div>
                                 <button id="saveSessionBtn" class="btn btn--save-session">Salvar Sessão</button>
                             </div>
                             <p class="circular-timer__info">Tempo total da peça: <strong id="totalPieceTimeDisplay">0h 0m</strong></p>
                             <p class="card__hint"><strong>Dica:</strong> Após terminar, volte à etapa 'Materiais' para inserir o peso final dos fios.</p>
                         </div>
+
                         <div class="card">
                             <h3 class="card__title"><i data-feather="briefcase"></i>Custo de Mão de Obra</h3>
-                             <div class="form-group form-group--inline">
+                            <div class="form-group form-group--inline">
                                 <p class="form-group__label">Adicionar tempo manual:</p>
                                 <div class="input-group--inline">
                                     <input type="number" id="manualHours" placeholder="0" min="0" class="form-group__input--small">
@@ -206,14 +209,19 @@
                                 <button id="addTimeBtn" class="btn btn--secondary btn--small">Adicionar</button>
                             </div>
                             <div class="labor-cost">
-                                <p>Tempo trabalhado: <strong id="laborTimeDisplay">0h</strong></p>
+                                <p class="time-display-row">
+    Tempo trabalhado: 
+    <strong id="laborTimeDisplay">0h 0m</strong>
+    <button id="editTimeBtn" class="btn-icon-small" title="Editar tempo total">
+        <i data-feather="edit-2"></i>
+    </button>
+</p>
                                 <p>Salário/hora: <strong id="laborRateDisplay">R$ 30.00</strong></p>
                                 <p>Custo de mão de obra: <strong id="laborCostDisplay">R$ 0.00</strong></p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Passo 4: Preço Final -->
                     <div class="form-step" data-step-id="4">
                         <div class="card card--summary">
                             <h3 class="card__title">Resumo de Custos</h3>
@@ -243,7 +251,6 @@
                                 <span class="summary-item__value" id="totalCostDisplay">R$ 0.00</span>
                             </div>
 
-                            <!-- Contêiner do Gráfico de Pizza -->
                             <div class="chart-container">
                                 <h4 class="chart-title">Distribuição de Custos</h4>
                                 <canvas id="costDistributionChart"></canvas>
@@ -251,12 +258,17 @@
 
                             <hr class="divider">
 
-                            <!-- Bloco de Configurações de Preço -->
                             <div class="price-settings-block">
                                 <h4 class="settings-title">Ajustes Finais</h4>
                                 <div class="settings-inputs">
                                     <div class="form-group">
-                                        <label for="indirectCosts">Custos Indiretos (%)</label>
+                                        <div class="label-with-tooltip">
+                                            <label for="indirectCosts">Custos Indiretos (%)</label>
+                                            <div class="tooltip">
+                                                <i data-feather="help-circle" class="tooltip__icon"></i>
+                                                <span class="tooltip__text">Uma porcentagem sobre o custo total para cobrir despesas como luz, água, internet, marketing, etc.</span>
+                                            </div>
+                                        </div>
                                         <div class="form-group__wrapper">
                                             <i data-feather="percent"></i>
                                             <input type="number" id="indirectCosts" placeholder="15" value="15" min="0" step="1">
@@ -264,7 +276,13 @@
                                     </div>
         
                                     <div class="form-group">
-                                        <label for="profitMargin">Margem de Lucro (%)</label>
+                                        <div class="label-with-tooltip">
+                                            <label for="profitMargin">Margem de Lucro (%)</label>
+                                            <div class="tooltip">
+                                                <i data-feather="help-circle" class="tooltip__icon"></i>
+                                                <span class="tooltip__text">A porcentagem que você deseja ganhar sobre o custo total da peça (incluindo custos indiretos).</span>
+                                            </div>
+                                        </div>
                                         <div class="form-group__wrapper">
                                             <i data-feather="percent"></i>
                                             <input type="number" id="profitMargin" placeholder="30" value="30" min="0" step="1">
@@ -282,15 +300,12 @@
                     </div>
                 </div>
 
-                <!-- Rodapé de Ação Fixo -->
                 <div class="fixed-action-footer">
                     <button id="prev-step-btn" class="btn btn--secondary">Voltar</button>
                     <button id="next-step-btn" class="btn btn--primary">Avançar</button>
-                    <!-- <button id="calculatePriceBtn" class="btn btn--primary btn--large">Calcular Preço Final</button> -->
                 </div>
             </section>
 
-            <!-- Recipes Tab -->
             <section id="recipes-tab" class="tab-pane">
                 <div class="page-header">
                     <h2>Minhas Receitas</h2>
@@ -303,7 +318,6 @@
                 </div>
             </section>
 
-            <!-- History Tab -->
             <section id="history-tab" class="tab-pane">
                 <div class="page-header">
                     <h2>Histórico de Peças</h2>
@@ -331,7 +345,6 @@
         </main>
     </div>
 
-    <!-- Modal for Adding Yarn -->
     <div id="yarnModal" class="modal">
         <div class="modal__content">
             <div class="modal__header">
@@ -352,7 +365,6 @@
                     <input type="number" id="yarnFinalWeight" placeholder="50" step="0.1">
                 </div>
                 <div class="form-group">
-                    <!-- Calculadora de Preço por Grama -->
                     <div class="price-helper">
                         <p class="price-helper__title">Não sabe o preço por grama? Calcule aqui:</p>
                         <div class="helper-inputs">
@@ -378,7 +390,6 @@
         </div>
     </div>
 
-    <!-- Modal for Adding Recipe -->
     <div id="recipeModal" class="modal"> 
         <div class="modal__content">
             <div class="modal__header"> 
@@ -414,7 +425,6 @@
         </div>
     </div>
 
-    <!-- Modal for Adding Other Materials -->
     <div id="materialModal" class="modal">
         <div class="modal__content">
             <div class="modal__header"> 
@@ -442,7 +452,6 @@
         </div>
     </div>
 
-    <!-- Modal para Calculadora de Salário/Hora -->
     <div id="salaryHelperModal" class="modal">
         <div class="modal__content">
             <div class="modal__header">
@@ -473,100 +482,77 @@
         </div>
     </div>
 
-    <!-- ============================================ -->
-    <!-- MODAL DE AUTENTICAÇÃO (LOGIN E REGISTRO)      -->
-    <!-- ============================================ -->
-    <div id="authModal" class="modal">
-        <div class="modal__content modal__content--auth">
-            <!-- Coluna de Imagem (decorativa) -->
-            <div class="auth-card">
-                <img src="images/logo.png" alt="Logo AmigurumiPreço" class="auth-card__logo" loading="lazy">
-                <h2>Bem-vinda de volta!</h2>
-                <p>Faça login para acessar suas receitas e histórico de precificação.</p>
-            </div>
-
-            <!-- Coluna do Formulário -->
-            <div class="auth-form-column">
+    <div id="saveOptionsModal" class="modal">
+        <div class="modal__content modal__content--small">
+            <div class="modal__header">
+                <h3>Salvar Precificação</h3>
                 <button class="modal__close">&times;</button>
-                <h3 id="authModalTitle">Login</h3>
-                <!-- Formulário de Login -->
-                <form id="loginForm" class="form form--auth form--active">
-                    <div class="form-group">
-                        <label for="loginEmail">Email</label>
-                        <input type="email" id="loginEmail" required placeholder="seu@email.com" autocomplete="email">
-                        <div class="form-error-message"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Senha</label>
-                        <div class="form-group__wrapper form-group__wrapper--password">
-                            <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
-                            <button type="button" class="password-toggle" data-target="loginPassword"><i data-feather="eye"></i></button>
-                        </div>
-                        <div class="form-error-message"></div>
-                        <a href="#" id="forgotPasswordLink" class="form__link">Esqueceu a senha?</a>
-                    </div>
-                    <button type="submit" class="btn btn--primary btn--full">Entrar</button>
-
-                    <!-- Divisor e Botão de Login com Google -->
-                    <div class="form__divider"><span>ou</span></div>
-                    <button type="button" id="googleLoginBtn" class="btn btn--google">
-                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="btn__icon--google"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg>
-                        <span>Entrar com Google</span>
-                    </button>
-
-                    <p class="form__switch">Não tem uma conta? <a href="#" id="showRegister">Registre-se</a></p>
-                </form>
-
-                <!-- Formulário de Registro (inicialmente escondido) -->
-                <form id="registerForm" class="form form--auth">
-                    <div class="form-group">
-                        <label for="registerName">Seu Nome</label>
-                        <input type="text" id="registerName" required placeholder="Como podemos te chamar?" autocomplete="name">
-                        <div class="form-error-message"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerEmail">Email</label>
-                        <input type="email" id="registerEmail" required placeholder="seu@email.com" autocomplete="email">
-                        <div class="form-error-message"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerPassword">Senha</label>
-                        <div class="form-group__wrapper form-group__wrapper--password">
-                            <input type="password" id="registerPassword" required placeholder="Crie uma senha segura" autocomplete="new-password">
-                            <button type="button" class="password-toggle" data-target="registerPassword"><i data-feather="eye"></i></button>
-                        </div>
-                        <!-- Indicador de Força da Senha -->
-                        <div id="password-strength-indicator" class="password-strength">
-                            <ul>
-                                <li id="length-check" class="password-strength__check password-strength__check--invalid">
-                                    <i data-feather="x-circle"></i> Pelo menos 8 caracteres
-                                </li>
-                                <li id="case-check" class="password-strength__check password-strength__check--invalid">
-                                    <i data-feather="x-circle"></i> Letras maiúsculas e minúsculas
-                                </li>
-                                <li id="number-check" class="password-strength__check password-strength__check--invalid">
-                                    <i data-feather="x-circle"></i> Pelo menos um número
-                                </li>
-                                <li id="special-check" class="password-strength__check password-strength__check--invalid">
-                                    <i data-feather="x-circle"></i> Pelo menos um caractere especial
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn--primary btn--full">Criar Conta</button>
-                    <p class="form__switch">Já tem uma conta? <a href="#" id="showLogin">Faça Login</a></p>
-                </form>
+            </div>
+            <div class="modal__body">
+                <p>Como você gostaria de salvar os dados desta peça?</p>
+                <div class="save-options">
+                    <button id="saveAsPdfBtn" class="btn btn--primary"><i data-feather="file-text"></i> Salvar como PDF</button>
+                    <button id="saveAsCsvBtn" class="btn btn--secondary"><i data-feather="grid"></i> Salvar como CSV</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ADICIONE ESTES SCRIPTS DO FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <!-- FIM DOS SCRIPTS DO FIREBASE -->
-
-    <!-- Contêiner para as notificações Toast -->
     <div id="toast-container" class="toast-container"></div>
+
+    <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="wasteModal" class="modal">
+        <div class="modal__content modal__content--small">
+            <div class="modal__header">
+                <h3>Custo de Desperdício</h3>
+                <button class="modal__close">&times;</button>
+            </div>
+            <div class="modal__body">
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: #666;">
+                    Insira o valor estimado de gastos extras (cola, embalagem, etiquetas).
+                </p>
+                <div class="form-group">
+                    <label for="wasteCostInput">Valor (R$)</label>
+                    <div class="form-group__wrapper">
+                        <i data-feather="dollar-sign"></i>
+                        <input type="number" id="wasteCostInput" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary modal-close-btn">Cancelar</button>
+                <button id="confirmWasteBtn" class="btn btn--primary">Salvar Valor</button>
+            </div>
+        </div>
+    </div>
+<div id="editTimeModal" class="modal">
+    <div class="modal__content modal__content--small">
+        <div class="modal__header">
+            <h3>Editar Tempo Total</h3>
+            <button class="modal__close">&times;</button>
+        </div>
+        <div class="modal__body">
+            <p style="margin-bottom: 15px; font-size: 0.9rem; color: #666;">
+                Corrija o tempo total de produção manualmente.
+            </p>
+            <div class="form-group form-group--inline">
+                <div class="input-group--inline">
+                    <input type="number" id="editTimeHours" placeholder="0" min="0" class="form-group__input--small">
+                    <label for="editTimeHours">Horas</label>
+                </div>
+                <div class="input-group--inline">
+                    <input type="number" id="editTimeMinutes" placeholder="0" min="0" max="59" class="form-group__input--small">
+                    <label for="editTimeMinutes">Min</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal__footer">
+            <button class="btn btn--secondary modal-close-btn">Cancelar</button>
+            <button id="confirmEditTimeBtn" class="btn btn--primary">Salvar Correção</button>
+        </div>
+    </div>
+</div>
 
 </body>
 <script src="./assets/js/app.js" type="module"></script>

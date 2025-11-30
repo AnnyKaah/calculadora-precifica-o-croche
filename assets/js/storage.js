@@ -1,6 +1,6 @@
 import { state, elements } from './state.js';
 import { updateCalculations } from './calculations.js';
-import { renderYarns, renderMaterials, showToast } from './ui.js';
+import { renderYarns, renderMaterials, showToast, updateYarnWeight, deleteYarn, deleteMaterial } from './ui.js';
 import { updateTimerDisplay } from './timer.js';
 
 const FORM_STATE_KEY = 'amigurumiPreco_formState';
@@ -10,12 +10,18 @@ const SALARY_STORAGE_KEY = 'amigurumiPreco_baseSalary';
  * Salva o estado atual do formulário no localStorage.
  */
 export function saveFormState() {
+    // CORREÇÃO: Calcula o tempo total real (acumulado + sessão atual) antes de salvar
+    const currentTotalTime = state.timer.accumulatedSeconds + state.timer.currentSessionSeconds;
+
     const formState = {
         pieceName: elements.pieceName.value,
         pieceType: elements.pieceType.value,
         yarns: state.yarns,
         otherMaterials: state.otherMaterials,
-        totalSeconds: state.timer.totalSeconds,
+        // Salva o tempo total calculado corretamente
+        totalSeconds: currentTotalTime,
+        // Salva também o tempo de retrabalho
+        reworkSeconds: state.timer.reworkSeconds,
         timerIsRunning: state.timer.isRunning,
         indirectCosts: elements.indirectCostsInput.value,
         profitMargin: elements.profitMarginInput.value,
@@ -39,6 +45,13 @@ export function loadFormState() {
 
     state.yarns = formState.yarns || [];
     state.otherMaterials = formState.otherMaterials || [];
+    
+    // CORREÇÃO: Restaura o tempo total para o acumulado
+    state.timer.accumulatedSeconds = formState.totalSeconds || 0;
+    state.timer.currentSessionSeconds = 0; // Reseta a sessão atual pois é um novo carregamento
+    state.timer.reworkSeconds = formState.reworkSeconds || 0; // Restaura o retrabalho
+    
+    // Mantém a compatibilidade, mas o valor real agora está em accumulatedSeconds
     state.timer.totalSeconds = formState.totalSeconds || 0;
 
     if (formState.timerIsRunning) {
@@ -82,4 +95,40 @@ export function setupSalaryPersistence() {
     }
 
     elements.baseSalaryInput.addEventListener('change', () => saveBaseSalary(parseFloat(elements.baseSalaryInput.value)));
+}
+
+/**
+ * Configura os "escutadores de eventos" para os formulários principais.
+ */
+export function setupFormEventListeners() {
+    // Delegação de eventos para os itens de fio
+    if (elements.yarnsContainer) {
+        elements.yarnsContainer.addEventListener('change', e => {
+            if (e.target.matches('input[data-yarn-id]')) {
+                updateYarnWeight(Number(e.target.dataset.yarnId), parseFloat(e.target.value));
+            }
+        });
+        elements.yarnsContainer.addEventListener('click', e => {
+            const deleteBtn = e.target.closest('.yarn-delete');
+            if (deleteBtn) {
+                deleteYarn(Number(deleteBtn.dataset.yarnId));
+            }
+        });
+    }
+
+    // Delegação de eventos para os itens de material (CORRIGIDO NA RESPOSTA ANTERIOR)
+    if (elements.materialsContainer) {
+        elements.materialsContainer.addEventListener('click', e => {
+            const deleteBtn = e.target.closest('.material-delete[data-material-id]');
+            if (deleteBtn) {
+                deleteMaterial(Number(deleteBtn.dataset.materialId));
+            }
+        });
+    }
+
+    // Listeners para salvar o estado do formulário automaticamente
+    if (elements.pieceName) elements.pieceName.addEventListener('input', saveFormState);
+    if (elements.pieceType) elements.pieceType.addEventListener('change', saveFormState);
+    if (elements.profitMarginInput) elements.profitMarginInput.addEventListener('change', () => { updateCalculations(); saveFormState(); });
+    if (elements.indirectCostsInput) elements.indirectCostsInput.addEventListener('change', () => { updateCalculations(); saveFormState(); });
 }

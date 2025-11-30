@@ -74,8 +74,6 @@ Este projeto foi construído utilizando tecnologias web modernas, com foco em pe
 
 ## 📸 Screenshots
 
-*(Aqui você pode adicionar imagens da sua aplicação. Ex: a tela de login, a calculadora em uso, o histórico de peças, etc.)*
-
 ![Tela Inicial](./images/hero-page.png)
 
 ---

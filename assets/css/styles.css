@@ -77,6 +77,8 @@ body {
     margin: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden !important;
+    max-width: 100% !important;
 }
  
 /* --- TIPOGRAFIA --- */
@@ -2686,3 +2688,65 @@ input[type=number] {
 .modal__body .form-group {
     margin-bottom: 0 !important;
 }
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 15px 15px 120px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .wizard-steps {
+        padding: 0 10px !important;
+        gap: 6px;
+    }
+
+    .wizard-steps__title {
+        font-size: 0.75rem;
+    }
+
+    .wizard-steps__counter {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-header__actions .form-group {
+        padding: 5px 10px;
+        gap: 6px;
+    }
+
+    .app-header__actions input {
+        width: 55px !important;
+    }
+
+    .salary-calculator-link {
+        display: none !important; /* Opcional */
+    }
+}
+
+@media (max-width: 480px) {
+    .form-step .btn,
+    .footer-buttons {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .footer-buttons {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 10px;
+    }
+}
+
+html, body {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+}
+
+* {
+    box-sizing: border-box;
+}
+

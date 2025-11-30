@@ -1,4 +1,5 @@
 import { state, elements } from './state.js';
+import { updateCostChart } from './ui.js';
 
 /**
  * Adiciona uma animação de "flash" a um elemento para indicar que ele foi atualizado.
@@ -105,4 +106,7 @@ export function updateCalculations() {
     flashElement(elements.laborCostSummary);
     flashElement(elements.totalCostDisplay);
     flashElement(elements.finalPriceDisplay);
+
+    // Atualiza o gráfico de pizza com os novos custos
+    updateCostChart(yarnCost, otherMaterialsCost, laborCost, reworkCost);
 }

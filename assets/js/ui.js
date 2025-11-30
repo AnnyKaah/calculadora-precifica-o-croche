@@ -20,6 +20,21 @@ export function showToast(message, type = 'info', duration = 4000) {
     }, duration);
 }
 
+/**
+ * Anuncia uma mensagem para leitores de tela usando uma região ARIA-live.
+ * @param {string} message A mensagem a ser anunciada.
+ */
+export function announceForScreenReaders(message) {
+    const container = document.getElementById('sr-announcer');
+    if (!container) {
+        console.warn('Elemento #sr-announcer não encontrado para acessibilidade.');
+        return;
+    }
+    // Limpa a mensagem anterior e define a nova para garantir que seja lida
+    container.textContent = '';
+    setTimeout(() => { container.textContent = message; }, 100);
+}
+
 export function switchTab(tabName) {
     const newTab = document.getElementById(`${tabName}-tab`); // Encontra a nova aba pelo ID
     const currentTab = document.querySelector('.tab-pane--active'); // Encontra a aba atualmente ativa
@@ -35,6 +50,12 @@ export function switchTab(tabName) {
         }, { once: true });
     }
     newTab.classList.add('tab-pane--active');
+
+    // Fecha o menu de navegação mobile após a seleção, se estiver aberto
+    if (elements.mainNav && elements.mainNav.classList.contains('open')) {
+        elements.mainNav.classList.remove('open');
+    }
+
 
     // A renderização agora é tratada pelo pieceManager ou outro módulo específico
     // if (tabName === 'history') renderHistory();
@@ -264,30 +285,30 @@ export function renderHistory(searchTerm = '') {
     elements.historyContainer.innerHTML = sorted.length === 0
         ? `<div class="empty-state"><p>📭 Nenhuma peça no histórico.</p></div>`
         : sorted.map(item => `
-            <div class="history-item" data-id="${item.id}">
-                <div class="history-item__main">
-                    <div class="history-item__info">
-                        <h4 class="history-item__name">${item.name}</h4>
-                        <p class="history-item__type">${item.type}</p>
-                        <p class="history-item__date">Salvo em: ${new Date(item.date).toLocaleDateString('pt-BR')}</p>
-                    </div>
-                    <div class="history-item__price">
-                        <span>Preço Final</span>
-                        <strong>R$ ${item.finalPrice.toFixed(2)}</strong>
-                    </div>
+        <div class="history-item" data-id="${item.id}">
+            <div class="history-item__info">
+                <h4 class="history-item__name">${item.name}</h4>
+                <p class="history-item__type">${item.type}</p>
+                <p class="history-item__date">Salvo em: ${new Date(item.date).toLocaleDateString('pt-BR')}</p>
+            </div>
+            <div class="history-item__details">
+                <div class="history-item__price">
+                    <span>Preço Final</span>
+                    <strong>R$ ${item.finalPrice.toFixed(2)}</strong>
                 </div>
                 <div class="history-item__actions">
-                    <button class="btn-icon" data-action="load" title="Carregar dados desta peça">
-                        <i data-feather="upload-cloud"></i>
+                    <button class="btn btn--icon" data-action="load" title="Carregar dados desta peça">
+                        <i data-feather="upload-cloud"></i> <span>Carregar</span>
                     </button>
-                    <button class="btn-icon" data-action="pdf" title="Gerar PDF da precificação">
-                        <i data-feather="file-text"></i>
+                    <button class="btn btn--icon" data-action="pdf" title="Gerar PDF da precificação">
+                        <i data-feather="file-text"></i> <span>PDF</span>
                     </button>
-                    <button class="btn-icon btn-icon--danger" data-action="delete" title="Excluir esta peça">
-                        <i data-feather="trash-2"></i>
+                    <button class="btn btn--icon btn--icon-danger" data-action="delete" title="Excluir esta peça">
+                        <i data-feather="trash-2"></i> <span>Excluir</span>
                     </button>
                 </div>
             </div>
+        </div>
         `).join('');
 }
 
@@ -311,6 +332,52 @@ function renderRecipeMaterials() {
     } else {
         container.innerHTML = '<p>Nenhum material adicionado a esta receita ainda.</p>';
     }
+}
+
+/**
+ * Atualiza ou cria o gráfico de pizza de distribuição de custos.
+ * @param {number} yarnCost Custo total dos fios.
+ * @param {number} materialsCost Custo total de outros materiais.
+ * @param {number} laborCost Custo total da mão de obra.
+ * @param {number} reworkCost Custo total do retrabalho.
+ */
+export function updateCostChart(yarnCost, materialsCost, laborCost, reworkCost) {
+    const ctx = elements.costChartCanvas;
+    if (!ctx) return;
+
+    // Destrói o gráfico anterior para evitar sobreposição e problemas de memória
+    if (state.costChartInstance) {
+        state.costChartInstance.destroy();
+    }
+
+    const data = {
+        labels: ['Fios', 'Outros Materiais', 'Mão de Obra', 'Retrabalho'],
+        datasets: [{
+            label: 'Distribuição de Custos',
+            data: [yarnCost, materialsCost, laborCost, reworkCost],
+            backgroundColor: [
+                '#FFC857', // Amarelo para Fios
+                '#E9724C', // Laranja para Materiais
+                '#C5283D', // Vermelho para Mão de Obra
+                '#481D24'  // Vinho escuro para Retrabalho
+            ],
+            borderColor: '#FFFFFF',
+            borderWidth: 2
+        }]
+    };
+
+    state.costChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
 }
 
 export function renderRecipes() {
@@ -339,12 +406,27 @@ export function renderRecipes() {
         }).join('');
 }
 
+function handleNavClick(event) {
+    const tab = event.currentTarget.dataset.tab;
+    switchTab(tab);
+}
+
 export function setupNavEventListeners() {
-    elements.navButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+    elements.navButtons.forEach(btn => btn.addEventListener('click', handleNavClick));
     if (elements.menuToggle) elements.menuToggle.addEventListener('click', () => elements.mainNav.classList.toggle('open'));
 }
 
 export function setupModalEventListeners() {
+    // Listener para fechar modais com a tecla ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            const activeModal = document.querySelector('.modal.active');
+            if (activeModal) {
+                activeModal.classList.remove('active');
+            }
+        }
+    });
+
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', e => {
             if (e.target === modal || e.target.closest('.modal__close') || e.target.closest('.btn-secondary[id^="cancel"]')) {
@@ -352,16 +434,9 @@ export function setupModalEventListeners() {
             }
         });
         // Adiciona listener para a tecla ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape" && modal.classList.contains('active')) {
-                modal.classList.remove('active');
-            }
-        });
     });
     if (elements.addYarnBtn) elements.addYarnBtn.addEventListener('click', openYarnModal);
-    const confirmYarnBtn = document.getElementById('confirmYarnBtn');
-    if (confirmYarnBtn) confirmYarnBtn.addEventListener('click', addYarn); // Corrigido para chamar a função certa
-    
+
     // Listeners para a calculadora de preço por grama (cálculo automático)
     if (elements.yarnHelperPriceInput) {
         elements.yarnHelperPriceInput.addEventListener('input', calculatePricePerGramHelper);
@@ -521,6 +596,17 @@ export function setupFormEventListeners() {
         if(target.closest('[data-action="pdf"]')) generatePDF(target.closest('.history-item').dataset.id);
     });
 
+    // Listeners para filtros e ordenação do histórico
+    if (elements.historySearchInput) {
+        elements.historySearchInput.addEventListener('input', (e) => renderHistory(e.target.value));
+    }
+    if (elements.historySortSelect) {
+        elements.historySortSelect.addEventListener('change', (e) => {
+            state.historySortOrder = e.target.value;
+            renderHistory(elements.historySearchInput.value);
+        });
+    }
+
     // Delegação de eventos para as receitas
     if (elements.recipesGrid) elements.recipesGrid.addEventListener('click', e => {
         const target = e.target;
@@ -546,6 +632,13 @@ export function setupGeneralEventListeners() {
 
     // Inicializa os listeners dos botões do cronômetro (Iniciar, Pausar, Resetar, Salvar Sessão)
     setupTimerEventListeners();
+
+    // Configura atributos de acessibilidade para o timer
+    if (elements.circularTimer) {
+        elements.circularTimer.setAttribute('role', 'timer');
+        elements.circularTimer.setAttribute('aria-live', 'polite');
+        elements.circularTimer.setAttribute('aria-atomic', 'true');
+    }
 
     // Adiciona sombra ao header no scroll
     if (elements.mainContent && elements.appHeader) {

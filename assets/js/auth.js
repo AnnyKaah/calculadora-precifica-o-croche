@@ -2,6 +2,7 @@ import { auth, db } from './firebase.js';
 import { elements, state } from './state.js';
 import { showToast, renderHistory, renderRecipes, openModal } from './ui.js';
 import { loadDataFromFirestore } from './pieceManager.js';
+import { setupTimerControls, loadTimeSessions } from './timer.js';
 
 function showMainApp() {
     if (elements.heroPage && elements.mainApp) {
@@ -24,7 +25,7 @@ function handleLogin(email, password) {
         .then(() => {
             elements.authModal.classList.remove('active');
             showToast('Login realizado com sucesso!', 'success');
-            showMainApp(); // <-- Adicionado aqui
+            showMainApp();
         })
         .catch(error => showToast(`Erro ao fazer login: ${error.message}`, 'error'));
 }
@@ -42,7 +43,7 @@ function handleRegister(name, email, password) {
         })
         .then(() => {
             elements.authModal.classList.remove('active');
-            showMainApp(); // <-- Adicionado aqui
+            showMainApp();
         })
         .catch(error => showToast(`Erro ao registrar: ${error.message}`, 'error'));
 }
@@ -53,7 +54,7 @@ function handleGoogleLogin() {
         .then(() => {
             elements.authModal.classList.remove('active');
             showToast('Login com Google realizado com sucesso!', 'success');
-            showMainApp(); // <-- Adicionado aqui
+            showMainApp();
         })
         .catch(error => showToast(`Erro ao fazer login com Google: ${error.message}`, 'error'));
 }
@@ -117,6 +118,7 @@ export function updateUIForUser(user) {
         elements.loginBtn.style.display = 'none';
         showMainApp();
         loadDataFromFirestore(user.uid);
+        loadTimeSessions(user.uid); // << CARREGA O HISTÓRICO DE TEMPO DO USUÁRIO
     } else {
         elements.userInfoContainer.style.display = 'none';
         elements.loginBtn.style.display = 'block';
@@ -151,17 +153,14 @@ export function setupAuthListeners() {
         });
     }
 
-    // Adiciona o listener para o botão "Começar a Precificar"
     if (elements.startPricingBtn) {
         elements.startPricingBtn.addEventListener('click', handleStartPricing);
     }
 
-    // Fallback para o botão de entrar sem login
     if (elements.enterAppBtn) {
         elements.enterAppBtn.addEventListener('click', showMainApp);
     }
 
-    // Listeners para alternar entre login e registro
     if (elements.showRegister) {
         elements.showRegister.addEventListener('click', (e) => {
             e.preventDefault();
@@ -175,10 +174,13 @@ export function setupAuthListeners() {
         });
     }
 
-    // Listener para mostrar/ocultar senha
     document.querySelectorAll('.password-toggle').forEach(btn => {
         btn.addEventListener('click', togglePasswordVisibility);
     });
+
+    // Configura os controles do cronômetro
+    setupTimerControls();
+
 }
 
 // --- Validação de Senha ---

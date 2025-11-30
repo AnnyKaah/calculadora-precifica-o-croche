@@ -2,11 +2,13 @@ export const state = {
     timer: {
         isRunning: false,
         isPaused: false,
-        intervalId: null,
+        animationFrameId: null, // Para controlar o requestAnimationFrame
+        lastTickTimestamp: 0,   // Para garantir a precisão do tempo
         accumulatedSeconds: 0, // Tempo total de sessões salvas
         currentSessionSeconds: 0, // Tempo do cronômetro atual
         isReworkMode: false, // Controla se o timer está em modo retrabalho
-        reworkSeconds: 0 // Acumula o tempo de retrabalho
+        reworkSeconds: 0, // Acumula o tempo de retrabalho
+        totalSeconds: 0 // Mantido para compatibilidade com loadFormState
     },
     yarns: [],
     otherMaterials: [], // 1. Adiciona a lista de outros materiais ao estado
@@ -25,7 +27,9 @@ export const state = {
     customSalary: null,
     historySortOrder: 'date_desc',
     originalTitle: document.title, // Guarda o título original da página
-    favicon: document.querySelector("link[rel='icon']") // Referência ao favicon
+    favicon: document.querySelector("link[rel='icon']"), // Referência ao favicon
+    costChartInstance: null, // Armazena a instância do gráfico de custos (pizza)
+    timeChartInstance: null // Armazena a instância do gráfico de tempo (barras)
 };
 
 export const elements = {
@@ -36,6 +40,7 @@ export const elements = {
     startBtn: document.getElementById('startBtn'),
     pauseBtn: document.getElementById('pauseBtn'),
     resetBtn: document.getElementById('resetBtn'),
+    reworkModeBtn: document.getElementById('reworkModeBtn'),
     totalPieceTimeDisplay: document.getElementById('totalPieceTimeDisplay'),
     laborTimeDisplay: document.getElementById('laborTimeDisplay'),
     laborRateDisplay: document.getElementById('laborRateDisplay'),
@@ -141,5 +146,12 @@ export const elements = {
     caseCheck: document.getElementById('case-check'),
     numberCheck: document.getElementById('number-check'),
     specialCheck: document.getElementById('special-check'),
-    passwordToggleBtns: document.querySelectorAll('.password-toggle-btn')
+    passwordToggleBtns: document.querySelectorAll('.password-toggle-btn'),
+
+    // Acessibilidade
+    srAnnouncer: document.getElementById('sr-announcer'),
+
+    // Gráficos
+    costChartCanvas: document.getElementById('costDistributionChart'),
+    timeChartCanvas: document.getElementById('timeChartCanvas'),
 };

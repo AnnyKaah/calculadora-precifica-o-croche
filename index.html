@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/styles.css">
     <!-- Biblioteca para gerar PDF -->
+    <!-- Biblioteca de Gráficos (Chart.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Biblioteca de Ícones (Feather Icons) -->
     <script src="https://unpkg.com/feather-icons"></script>
@@ -176,11 +178,11 @@
                                 <button id="pauseBtn" class="btn btn--pause" disabled>
                                     <i data-feather="pause"></i><span>Pausar</span>
                                 </button> 
-                                <button id="resetBtn" class="btn btn--stop">
+                                <button id="resetBtn" class="btn btn--stop" style="display: none;">
                                     <i data-feather="rotate-ccw"></i><span>Resetar</span>
                                 </button>
                             </div>
-                            <div class="circular-timer__actions">
+                            <div class="circular-timer__actions" style="margin-top: 1rem;">
                                 <button id="reworkModeBtn" class="btn btn--rework">
                                     <i data-feather="alert-triangle"></i> Modo Retrabalho
                                 </button>
@@ -239,6 +241,12 @@
                             <div class="summary-item">
                                 <span class="summary-item__label">Custo Total:</span>
                                 <span class="summary-item__value" id="totalCostDisplay">R$ 0.00</span>
+                            </div>
+
+                            <!-- Contêiner do Gráfico de Pizza -->
+                            <div class="chart-container">
+                                <h4 class="chart-title">Distribuição de Custos</h4>
+                                <canvas id="costDistributionChart"></canvas>
                             </div>
 
                             <hr class="divider">
@@ -302,8 +310,20 @@
                     <p>Acompanhe todas as peças que você precificou</p>
                 </div>
 
-                <div class="search-bar-container">
-                    <input type="text" id="historySearchInput" placeholder="🔎 Buscar por nome ou tipo...">
+                <div class="history-filters">
+                    <div class="form-group form-group--search">
+                        <i data-feather="search"></i>
+                        <input type="text" id="historySearchInput" placeholder="Buscar por nome ou tipo...">
+                    </div>
+                    <div class="form-group">
+                        <label for="historySortSelect">Ordenar por:</label>
+                        <select id="historySortSelect">
+                            <option value="date_desc">Mais Recentes</option>
+                            <option value="date_asc">Mais Antigos</option>
+                            <option value="name_asc">Nome (A-Z)</option>
+                            <option value="name_desc">Nome (Z-A)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div id="historyContainer" class="history-container"></div>

@@ -12,6 +12,59 @@
     --border-color: #F2EBF9; /* Borda lavanda super clara */
     --shadow: 0 4px 10px rgba(150, 80, 255, 0.06); /* Sombra nova, mais suave */
     --shadow-hover: 0 6px 20px rgba(150, 80, 255, 0.12);
+
+    /* --- Variáveis de Botão --- */
+    --btn-padding: 12px 25px;
+    --btn-border-radius: 12px;
+    --btn-font-weight: 600;
+    --btn-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    --btn-primary-bg: linear-gradient(to right, var(--primary) 0%, var(--secondary) 50%, var(--primary) 100%);
+    --btn-primary-color: white;
+    --btn-primary-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    --btn-secondary-bg: var(--border-color);
+    --btn-secondary-color: var(--primary);
+    --btn-secondary-bg-hover: #e5d5f2;
+
+    --btn-small-padding: 6px 12px;
+    --btn-small-font-size: 0.9rem;
+
+    /* --- Variáveis de Card --- */
+    --card-padding: 25px;
+    --card-border-radius: 16px;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --card-backdrop-filter: blur(8px);
+    --card-border: 1.5px solid #E5D0FF;
+    --card-shadow: var(--shadow);
+    --card-shadow-hover: var(--shadow-hover);
+    --card-transition: all 0.3s ease;
+
+    /* --- Variáveis de Modal --- */
+    --modal-z-index: 1000;
+    --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+    --modal-content-bg: var(--surface);
+    --modal-content-border-radius: 12px;
+    --modal-content-max-width: 500px;
+    --modal-content-shadow: var(--shadow-hover);
+    --modal-padding: 20px 25px;
+    --modal-header-border-bottom: 1px solid var(--border-color);
+    --modal-footer-border-top: 1px solid var(--border-color);
+    --modal-close-color: var(--text-light);
+    --modal-animation: modal-fade-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+
+    /* --- Variáveis de Formulário e Input --- */
+    --input-padding: 15px;
+    --input-border-radius: 14px;
+    --input-border: 1px solid var(--border-color);
+    --input-bg: #fff;
+    --input-color: var(--text-dark);
+    --input-placeholder-color: var(--text-light);
+    --input-focus-border-color: var(--primary);
+    --input-focus-shadow: 0 0 0 3px rgba(142, 45, 226, 0.15);
+    --input-transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    --label-margin-bottom: 8px;
+    --label-font-weight: 600;
 }
 
 body {
@@ -85,6 +138,8 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     border-radius: 50%;
     filter: blur(40px);
     animation: float 15s infinite ease-in-out;
+    /* Otimização: Avisa o navegador que a propriedade transform será animada. */
+    will-change: transform;
 }
 .hero__blob--1 {
     width: 400px;
@@ -164,6 +219,8 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     animation: slide-in 0.8s 0.2s ease-out forwards, hero-float 7s infinite ease-in-out 1s;
     opacity: 0; /* Necessário para a animação de entrada */
     transition: transform 0.4s ease; /* Transição suave para o efeito de hover */
+    /* Otimização: Avisa o navegador que as propriedades transform e opacity serão animadas. */
+    will-change: transform, opacity;
 }
 
 .hero__illustration:hover {
@@ -194,6 +251,8 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 /* As animações de entrada agora são aplicadas diretamente nos seletores */
 .hero__title { animation: slide-in 0.8s ease-out forwards; }
 .hero__subtitle { animation: slide-in 0.8s 0.4s ease-out forwards; opacity: 0; }
+/* Otimização: Adiciona will-change para a animação de entrada */
+.hero__subtitle, .btn--large { will-change: transform, opacity; }
 .btn--large { animation: slide-in 0.8s 0.6s ease-out forwards; opacity: 0; }
 
 @keyframes slide-in {
@@ -208,10 +267,10 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 }
 
 .btn--large {
-    padding: 18px 35px; /* Altura maior */
+    padding: 18px 35px;
     font-size: 1.2rem;
-    border-radius: 14px; /* Cantos mais arredondados */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* Sombra mais "clicável" */
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     animation: slide-in 0.8s 0.6s ease-out forwards, pulse-btn 2s infinite 1s;
 }
 
@@ -257,7 +316,8 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     background: transparent;
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease; 
+    /* Otimização: Transiciona apenas as propriedades que mudam, em vez de 'all'. */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .nav-btn:hover {
@@ -369,6 +429,8 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 .main-content {
     /* Diminui o padding superior para aproximar o título do topo */
     padding: 15px 50px 25px; /* Reduzido o padding superior */
+    /* Adiciona espaço no final para o rodapé fixo não cobrir o conteúdo */
+    padding-bottom: 120px; 
     overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
 }
 
@@ -641,23 +703,23 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 /* 3. Inputs pequenos para horas e minutos */
 .form-group__input--small {
     width: 80px; /* Uma largura fixa para os inputs de tempo */
-    padding: 8px 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background-color: #fff;
+    padding: 8px 10px; /* Padding menor que o padrão */
+    border: var(--input-border);
+    border-radius: 6px; /* Raio menor que o padrão */
+    background-color: var(--input-bg);
     font-family: 'Poppins', sans-serif;
 }
 
 .form-group__input--small:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.2);
+    border-color: var(--input-focus-border-color);
+    box-shadow: var(--input-focus-shadow);
 }
 
 /* 4. Botão pequeno para adicionar tempo/fio */
 .btn--small {
-    padding: 6px 12px;
-    font-size: 0.9rem;
+    padding: var(--btn-small-padding);
+    font-size: var(--btn-small-font-size);
 }
 
 /* 5. Ajustes gerais para garantir consistência */
@@ -665,13 +727,15 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 /* Garante que todos os cards tenham o mesmo espaçamento inferior */
 .card {
     /* Efeito Glassmorphism */
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(8px); /* Blur um pouco mais sutil */
-    border-radius: 16px; /* Bordas mais arredondadas */
-    border: 1.5px solid #E5D0FF; /* Borda sutil colorida */
-    box-shadow: var(--shadow);
-    transition: all 0.3s ease; /* Transição suave para hover */
-    padding: 25px;
+    background: var(--card-bg);
+    backdrop-filter: var(--card-backdrop-filter);
+    border-radius: var(--card-border-radius);
+    border: var(--card-border);
+    box-shadow: var(--card-shadow);
+    /* Otimização: Especifica as propriedades da transição e adiciona will-change. */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform, box-shadow;
+    padding: var(--card-padding);
 }
 .card__title {
     display: flex;
@@ -686,8 +750,8 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     height: 20px;
 }
 .card:hover {
-    transform: translateY(-5px); /* Efeito de "flutuar" */
-    box-shadow: var(--shadow-hover);
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
 }
 
 /* Garante que o último elemento de um card não tenha margem inferior extra */
@@ -703,6 +767,8 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 
 .form-step {
     display: none; /* Permanece escondido por padrão */
+    /* Otimização: Prepara o elemento para animações de transform e opacity. */
+    will-change: transform, opacity;
 }
 .form-step.active-step {
     display: block; /* Apenas o passo ativo é exibido */
@@ -776,14 +842,14 @@ input[type="text"],
 select,
 textarea {
     font-family: 'Poppins', sans-serif; /* Garante a fonte correta */
-    padding: 15px; /* Aumenta a altura para aprox. 48-50px */
-    border: 1px solid var(--border-color);
-    border-radius: 14px; /* Bordas mais arredondadas */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    padding: var(--input-padding);
+    border: var(--input-border);
+    border-radius: var(--input-border-radius);
+    transition: var(--input-transition);
     width: 100%;
     box-sizing: border-box;
-    background-color: #fff;
-    color: var(--text-dark); /* Garante que o texto digitado seja visível */
+    background-color: var(--input-bg);
+    color: var(--input-color);
 }
 
 select {
@@ -798,7 +864,7 @@ select {
 /* Placeholder com tom lilás */
 input::placeholder,
 textarea::placeholder {
-    color: var(--text-light);
+    color: var(--input-placeholder-color);
     opacity: 0.8;
 }
 
@@ -809,30 +875,32 @@ input[type="password"]:focus,
 select:focus,
 textarea:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(142, 45, 226, 0.15);
+    border-color: var(--input-focus-border-color);
+    box-shadow: var(--input-focus-shadow);
 }
 
 /* Melhorias nos Botões */
 .btn {
-    padding: 12px 25px;
-    border-radius: 12px; /* Bordas mais arredondadas */
+    padding: var(--btn-padding);
+    border-radius: var(--btn-border-radius);
     border: none;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-weight: var(--btn-font-weight);
+    /* Otimização: Especifica as propriedades da transição e adiciona will-change. */
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.3s ease, filter 0.1s ease;
+    will-change: transform, box-shadow;
 }
 
 .btn--primary {
-    background-image: linear-gradient(to right, var(--primary) 0%, var(--secondary) 50%, var(--primary) 100%);
+    background-image: var(--btn-primary-bg);
     background-size: 200% auto;
-    color: white;
+    color: var(--btn-primary-color);
 }
 
 .btn--primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background-position: right center; /* Move o gradiente no hover */
+    box-shadow: var(--btn-primary-shadow-hover);
+    background-position: right center;
 }
 
 .btn:active {
@@ -848,12 +916,12 @@ select:focus {
 }
 
 .btn--secondary {
-    background-color: var(--border-color);
-    color: var(--primary);
+    background-color: var(--btn-secondary-bg);
+    color: var(--btn-secondary-color);
 }
 
 .btn--secondary:hover {
-    background-color: #e5d5f2;
+    background-color: var(--btn-secondary-bg-hover);
 }
 
 /* Botão de "Salvar Peça" dentro do resumo */
@@ -930,6 +998,8 @@ select:focus {
     padding: inherit; /* Herda o padding do .main-content */
     box-sizing: border-box;
 }
+/* Otimização: Prepara as abas para animação */
+.tab-pane { will-change: transform, opacity; }
 .tab-pane--active {
     /* Torna a aba ativa visível e interativa */
     opacity: 1;
@@ -993,6 +1063,40 @@ select:focus {
     margin-left: 15px;
 }
 
+/* Estilos para a edição do nome da sessão no histórico */
+.yarn-item .session-name-input {
+    display: none; /* O input de edição fica escondido por padrão */
+    width: 60%;
+}
+
+.yarn-item .session-edit-actions {
+    display: none; /* Os botões de salvar/cancelar ficam escondidos */
+    gap: 8px;
+}
+
+/* Quando o item está em modo de edição */
+.yarn-item.editing .yarn-name,
+.yarn-item.editing .yarn-details,
+.yarn-item.editing .yarn-cost,
+.yarn-item.editing .yarn-duplicate,
+.yarn-item.editing .yarn-edit,
+.yarn-item.editing .yarn-delete {
+    display: none; /* Esconde o nome original e os botões de ação */
+}
+
+.yarn-item.editing .session-name-input {
+    display: inline-block; /* Mostra o input de edição */
+}
+
+.yarn-item.editing .session-edit-actions {
+    display: flex; /* Mostra os botões de salvar/cancelar */
+}
+
+.btn--icon-danger {
+    color: #FF3B30; /* Vermelho para ações destrutivas */
+}
+.btn--icon-danger:hover { color: #c70000; }
+
 /* Estilo para o resultado no modal de cálculo de salário */
 .salary-helper__result {
     margin-top: 20px;
@@ -1009,12 +1113,12 @@ select:focus {
 .modal {
     display: none; /* Escondido por padrão */
     position: fixed;
-    z-index: 1000;
+    z-index: var(--modal-z-index);
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: var(--modal-overlay-bg);
     justify-content: center;
     align-items: center;
 }
@@ -1022,12 +1126,14 @@ select:focus {
     display: flex; /* Usa flex para centralizar */
 }
 .modal__content {
-    background-color: var(--surface);
-    border-radius: 12px;
+    background-color: var(--modal-content-bg);
+    border-radius: var(--modal-content-border-radius);
     width: 90%;
-    max-width: 500px;
-    box-shadow: var(--shadow-hover);
+    max-width: var(--modal-content-max-width);
+    box-shadow: var(--modal-content-shadow);
     animation: modal-fade-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    /* Otimização: Prepara o modal para animação */
+    will-change: transform, opacity;
 }
 
 @keyframes modal-fade-in {
@@ -1042,29 +1148,29 @@ select:focus {
 }
 
 .modal__header, .modal__body, .modal__footer {
-    padding: 20px 25px;
+    padding: var(--modal-padding);
 }
 
 .modal__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: var(--modal-header-border-bottom);
 }
 
 .modal__close {
     background: none;
     border: none;
     font-size: 1.8rem;
-    color: var(--text-light);
+    color: var(--modal-close-color);
     cursor: pointer; 
     transition: color 0.3s ease, transform 0.3s ease;
 }
 .modal__close:hover {
-    color: var(--primary);
+    color: var(--primary); /* Reutiliza a cor primária para consistência */
 }
 
-.modal-footer {
+.modal__footer {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -1147,6 +1253,24 @@ input[type=number] {
     overflow: hidden; /* Garante que os cantos arredondados sejam respeitados */
     position: sticky; /* Faz o painel acompanhar o scroll */
     top: 50px;
+}
+
+/* --- GRÁFICO DE PIZZA NO RESUMO --- */
+.chart-container {
+    position: relative; /* Necessário para o Chart.js gerenciar o tamanho responsivo */
+    margin: 25px auto; /* Adiciona espaçamento vertical e centraliza o gráfico */
+    padding: 0 20px; /* Garante que o gráfico não cole nas bordas do card */
+    max-width: 380px; /* Limita a largura máxima em telas grandes, melhorando a proporção */
+    height: auto; /* A altura se ajustará automaticamente */
+}
+
+.chart-title {
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 15px;
 }
 
 .card--summary .card__title {
@@ -1282,6 +1406,15 @@ input[type=number] {
 }
 .circular-timer.timer-running {
     animation: pulse-timer 2s infinite ease-in-out;
+    /* Otimização: Prepara o timer para a animação de pulso contínua. */
+    will-change: transform;
+}
+
+.circular-timer__session-name {
+    width: 80%;
+    margin: 0 auto 20px; /* Espaço abaixo do input e acima dos botões */
+    text-align: center;
+    padding: 8px 12px;
 }
 
 .circular-timer__svg {
@@ -1335,6 +1468,12 @@ input[type=number] {
     gap: 8px;
 }
 
+.circular-timer__controls .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-image: none;
+    background-color: var(--border-color);
+}
 .circular-timer__controls .btn--start {
     background-image: linear-gradient(45deg, #4CAF50 0%, #81C784 100%);
     color: white;
@@ -1373,6 +1512,47 @@ input[type=number] {
 
 .btn--save-session:hover {
     background-color: var(--background);
+}
+
+/* --- HISTÓRICO DE TEMPO --- */
+.time-history {
+    margin-top: 30px;
+}
+
+.time-history__title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.time-history__group-header {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    background-color: var(--background);
+    padding: 8px 10px;
+    margin-top: 15px;
+    border-radius: 6px;
+}
+
+.time-history__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px; /* Limita a altura e adiciona scroll */
+    overflow-y: auto;
+    padding-right: 10px; /* Espaço para a barra de rolagem */
+}
+
+.time-history__placeholder {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-light);
 }
 
 /* --- MODO RETRABALHO --- */
@@ -1488,25 +1668,27 @@ input[type=number] {
 
 /* --- RODAPÉ DE AÇÃO FIXO --- */
 .fixed-action-footer {
-    position: sticky;
+    position: fixed; /* Altera para 'fixed' para fixar na tela */
     bottom: 0;
-    /* O left e right 0 garantem que ele ocupe a largura do container pai */
-    left: 0; /* Adicionado para garantir o alinhamento */
+    left: 0;
     width: 100%; /* Garante que ocupe toda a largura */
-    /* A margem negativa foi removida para um comportamento mais previsível */
     padding: 20px;
     box-sizing: border-box; /* Garante que o padding não aumente a largura total */
     background: var(--surface);
     display: flex;
     justify-content: space-between; /* Alinha os botões nas extremidades */
     align-items: center;
-    z-index: 500;
+    z-index: 500; /* Garante que fique acima do conteúdo, mas abaixo de modais */
+    /* Permite que eventos de clique e rolagem "passem através" das áreas vazias do rodapé */
+    pointer-events: none;
 }
 .fixed-action-footer .btn {
     padding: 16px 35px; /* Aumenta a altura dos botões */
     font-size: 1.1rem;
     min-width: 150px; /* Garante uma largura mínima */
     text-align: center;
+    /* Faz com que os botões voltem a ser interativos e capturar cliques */
+    pointer-events: auto;
 }
 
 
@@ -1732,14 +1914,14 @@ input[type=number] {
 
 /* Estilos específicos para os grupos de formulário no modal de autenticação */
 .auth-form .form-group {
-    margin-bottom: 20px; /* Aumenta o espaço entre os campos */
+    margin-bottom: 20px;
 }
 
 .auth-form .form-group label {
     display: block;
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 8px; /* Espaço entre o label e o input */
+    font-weight: var(--label-font-weight);
+    color: var(--input-color);
+    margin-bottom: var(--label-margin-bottom);
     font-size: 0.9rem;
 }
 
@@ -1758,6 +1940,9 @@ input[type=number] {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    /* Adicionado para melhor comportamento em telas pequenas */
+    width: auto;
+    max-width: calc(100% - 40px); /* Garante que não cole nas bordas */
 }
 
 .toast {
@@ -1770,6 +1955,12 @@ input[type=number] {
     box-shadow: var(--shadow-hover);
     border-left: 5px solid; /* A cor será definida pela classe de modificação */
     min-width: 320px;
+    /* Sombra mais suave e elevada */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    /* Borda sutil no topo em vez da esquerda */
+    border-top: 4px solid; 
+    width: 100%;
+    max-width: 350px; /* Largura máxima para desktop */
     opacity: 0;
     transform: translateX(100%);
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
@@ -1816,4 +2007,16 @@ input[type=number] {
 }
 .toast.info .toast-icon {
     color: var(--primary);
+}
+
+/* Ajustes para telas menores (mobile) */
+@media (max-width: 500px) {
+    .toast-container {
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+        width: 90%;
+        max-width: 400px;
+    }
 }

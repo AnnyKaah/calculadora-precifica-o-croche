@@ -29,12 +29,6 @@ function init() {
     setupSalaryPersistence();
     loadFormState(); // Carrega o estado do formulário da última sessão.
 
-    // Adiciona listeners que podem não ter sido pegos na inicialização modular
-    const confirmYarnBtn = document.getElementById('confirmYarnBtn');
-    if (confirmYarnBtn) {
-        confirmYarnBtn.addEventListener('click', addYarn);
-    }
-
     // 4. Realiza um cálculo inicial para garantir que a UI esteja correta.
     updateCalculations();
 }

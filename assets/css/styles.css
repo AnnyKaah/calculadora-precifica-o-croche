@@ -81,12 +81,6 @@ body {
     max-width: 100% !important;
 }
  
-/* --- TIPOGRAFIA --- */
-/* Define a fonte serifada para todos os títulos e elementos de destaque */
-h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
-    color: var(--primary-darker);
-    font-family: 'Playfair Display', serif;
-}
  
 @keyframes float {
     0% { transform: translateY(0px); }
@@ -98,6 +92,28 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-12px); }
     100% { transform: translateY(0px); }
+}
+
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- TIPOGRAFIA --- */
+/* Define a fonte serifada para todos os títulos e elementos de destaque */
+h1, h2, h3, .hero__title, .app-header__title, .modal__header h3, .auth-form h3 {
+    color: var(--primary-darker);
+    font-family: 'Playfair Display', serif;
+}
+
+.modal__header h3 {
+    margin-bottom: 0; /* Remove a margem inferior do título do modal */
 }
 /* --- HERO PAGE RENOVADA E DINÂMICA --- */
 
@@ -216,17 +232,6 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
 .hero__subtitle { animation-delay: 0.4s; }
 #enter-app-btn { animation-delay: 0.6s; }
 
-@keyframes slide-in {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Botão Principal com mais destaque */
 #enter-app-btn {
     background: #ffffff;
@@ -267,6 +272,15 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     /* A rolagem agora será gerenciada pelo body, removendo o overflow-y daqui */
 }
 
+/* --- HEADER REDESENHADO --- */
+.app-header {
+    background: #ffffff;
+    padding: 15px 0; /* Padding vertical */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Sombra super suave */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
 .app-header {
     flex-shrink: 0; /* Impede que o cabeçalho encolha */
 }
@@ -320,6 +334,14 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     height: 20px;
 }
 
+.app-header__content {
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 /* --- CAIXA DE CONHECIMENTO / DICA --- */
 .knowledge-box {
     background-color: #FBF5FF; /* Um tom de lavanda muito claro, um pouco diferente do fundo principal */
@@ -399,25 +421,6 @@ h1, h2, h3, .hero__title, .app-header__title, .modal__header h3 {
     /* Adiciona espaço no final para o rodapé fixo não cobrir o conteúdo */
     padding-bottom: 120px; 
     overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
-}
-
-/* --- HEADER REDESENHADO --- */
-.app-header {
-    background: #ffffff;
-    padding: 15px 0; /* Padding vertical */
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Sombra super suave */
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.app-header__content {
-    max-width: 1200px;
-    width: 90%;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 /* Classe que será adicionada via JS quando a página for rolada */
@@ -1355,7 +1358,8 @@ select:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: var(--modal-header-border-bottom);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px; /* Reduz o espaçamento inferior do cabeçalho */
 }
 
 .modal__close {
@@ -1382,7 +1386,7 @@ select:focus {
     background-color: var(--background);
     padding: 15px;
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 0; /* Remove a margem inferior para o gap do modal__body controlar */
     border: 1px solid var(--border-color);
 }
 
@@ -2274,13 +2278,6 @@ input[type=number] {
     right: 20px;
 }
 
-.auth-form h3 {
-    text-align: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem;
-    color: var(--primary-darker);
-    margin-bottom: 25px;
-}
 @media (max-width: 768px) {
     .modal__content--auth {
         flex-direction: column;
@@ -2662,7 +2659,7 @@ input[type=number] {
 /* --- MELHORIAS NO MODAL PADRÃO --- */
 /* Aumenta o respiro interno e ativa o Flexbox para gerenciar espaços */
 .modal__body {
-    padding: 30px; /* Um pouco mais de espaço que o padrão */
+    padding: 20px 30px 10px; /* Reduz o padding superior e inferior */
     display: flex;
     flex-direction: column;
     gap: 20px; /* O SEGREDO: Cria 20px de distância exata entre cada campo */
@@ -2678,7 +2675,7 @@ input[type=number] {
 /* Ajusta o rodapé para ter mais ar */
 .modal__footer {
     padding: 20px 30px;
-    margin-top: 10px; /* Separa um pouco mais dos campos */
+    margin-top: 0; /* Remove a margem superior para aproximar do corpo */
     background-color: #fafafa; /* Opcional: cor de fundo sutil no rodapé */
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
@@ -2689,6 +2686,12 @@ input[type=number] {
     margin-bottom: 0 !important;
 }
 
+/* Ajuste para diminuir o padding interno dos inputs nos modais */
+.modal__body input[type="text"],
+.modal__body input[type="number"] {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
 @media (max-width: 480px) {
     .main-content {
         padding: 15px 15px 120px !important;
@@ -2750,3 +2753,45 @@ html, body {
     box-sizing: border-box;
 }
 
+@media (max-width: 480px) {
+
+    /* Reduz tamanho do título */
+    .app-header__title {
+        font-size: 1.4rem;
+    }
+
+    /* Deixa o header mais compacto */
+    .app-header__content {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    /* Caixa do salário mais estreita e leve */
+    .app-header__actions .form-group {
+        padding: 4px 8px;
+        gap: 4px;
+    }
+
+    /* Input menor */
+    .app-header__actions input {
+        width: 48px !important;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+
+    /* O texto "SALÁRIO/HORA (R$)" diminui */
+    .app-header__actions label {
+        font-size: 0.65rem;
+    }
+
+    /* Esconde o link de ajuda, que quebra layout */
+    .salary-calculator-link {
+        display: none !important;
+    }
+
+    /* Centraliza o menu hamburguer e evita quebra */
+    .menu-toggle {
+        transform: scale(0.9);
+    }
+}
